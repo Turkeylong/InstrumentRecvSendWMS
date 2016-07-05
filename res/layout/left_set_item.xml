@@ -1,0 +1,44 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/itemLin"
+        android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:orientation="horizontal"
+        android:visibility="visible" >
+
+        <ImageView
+            android:id="@+id/item_img_left"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="5dp" />
+
+        <TextView
+            android:id="@+id/item_text"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:gravity="center|left"
+            android:singleLine="true"
+            android:text="" />
+
+        <ImageView
+            android:id="@+id/item_img_right"
+            android:layout_width="10dp"
+            android:layout_height="15dp"
+            android:layout_gravity="center"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/zk_right_arr" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/select_bottom_line"
+        style="@style/longLineStyle" />
+
+</LinearLayout>

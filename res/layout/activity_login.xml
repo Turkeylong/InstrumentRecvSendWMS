@@ -1,0 +1,116 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".LoginActivity" >
+
+    <!-- Login progress -->
+    <!-- merge与FrameLayout布局相同，都是帧布局，不同的是，当LayoutInflater遇到这个标签时，它会跳过它，并将<merge />内的元素添加到<merge />的父元素里。 -->
+
+
+    <!-- 这个线性布局是验证等待对话框的根元素，这个线性布局包含一个环形进度条，和一个字符标签 -->
+    <!-- 设置子元素在这个布局中心排布 -->
+    <!-- 设置该布局在父布局及界面中心水平放置 -->
+    <!-- 设置子布局纵向布局 -->
+    <!-- 设置这个布局界面隐藏不可见 -->
+
+    <LinearLayout
+        android:id="@+id/login_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/login_status_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="@string/login_progress_signing_in"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </LinearLayout>
+
+    <!-- Login form -->
+    <!-- 根目录为滚动试图 -->
+
+    <ScrollView
+        android:id="@+id/login_form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/background_login" >
+
+        <RelativeLayout
+            android:id="@+id/login_div"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center"
+            android:layout_margin="15dip"
+            android:background="@drawable/background_login_div"
+            android:gravity="center"
+            android:padding="15dip" >
+
+            <TextView
+                android:id="@+id/login_user_input"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="5dp"
+                android:text="@string/username" />
+
+            <EditText
+                android:id="@+id/username_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/login_user_input"
+                android:background="@drawable/background_login_div"
+                android:ems="10"
+                android:hint="@string/prompt_email"
+                android:inputType="textEmailAddress"
+                android:maxLines="1"
+                android:singleLine="true" />
+
+            <TextView
+                android:id="@+id/login_password_input"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/login_user_input"
+                android:layout_marginTop="10dp"
+                android:text="@string/password" />
+
+            <EditText
+                android:id="@+id/password_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@id/username_edit"
+                android:layout_alignRight="@id/username_edit"
+                android:layout_below="@id/username_edit"
+                android:layout_marginTop="10dp"
+                android:layout_toRightOf="@id/login_password_input"
+                android:background="@drawable/background_login_div"
+                android:hint="@string/prompt_password"
+                android:imeActionId="@+id/login"
+                android:imeActionLabel="@string/action_sign_in_short"
+                android:imeOptions="actionUnspecified"
+                android:inputType="textPassword"
+                android:maxLines="1"
+                android:singleLine="true" />
+
+            <Button
+                android:id="@+id/sign_in_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignRight="@id/password_edit"
+                android:layout_below="@id/password_edit"
+                android:layout_gravity="right"
+                android:layout_marginTop="10dp"
+                android:text="@string/action_sign_in_register" />
+        </RelativeLayout>
+    </ScrollView>
+
+</merge>
