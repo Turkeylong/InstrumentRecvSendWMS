@@ -1,0 +1,298 @@
+package com.rfid.instrument.activity;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.rfid.instrument.R;
+import com.rfid.instrument.util.Commission;
+import com.rfid.instrument.util.GetDataTask;
+import com.rfid.instrument.util.PublicUtil;
+import com.rfid.sdk.public_utils.DebugLog;
+
+public class CommitActivity extends Activity implements OnClickListener {
+	protected static final String TAG = "CommitActivity";
+	private Context context = CommitActivity.this;
+	private TextView entrustedInspectionNumber;//送检样品编号',
+	private TextView clientsContacts;//联系人',
+	private TextView clientsEmployer;//单位',
+	private TextView clientsEmployerAddress;//单位地址',
+	private TextView clientsPhone;//电话',
+	private TextView clientsPostcode;//邮政编码'
+	private TextView clientRequirement;//客户要求,
+	private TextView certificateClientsEmployer;//证书客户单位,
+	private TextView certificateClientsEmployerAddress;//证书客户单位地址,
+	private TextView flowmeterName;//流量计名称',
+	private TextView flowmeterCaliber;//流量计口径',
+	private TextView flowmeterInside;//内径',
+	private TextView flowmeterLength;//长度',
+	private TextView flowmeterModel;//流量计型号',
+	private TextView flowmeterFactoryNumber;//流量计出厂编号'
+	private TextView flowmeterManufactor;//流量计生产厂家',
+	private TextView flowmeterUseState;//流量计使用状态',
+	private TextView flowmeterNominalFlow;//标称流量',
+	private TextView flowmeterKcoefficient;//K系数',
+	private TextView flowmeterPressureLevel;//流量计耐压等级',
+	private TextView flowmeterAccessories;//其他附件',
+	private TextView flowmeterAppearance;//外观',
+	private TextView sampleDocuments;//样品资料',
+	private TextView flowmeterWorkTypes;//工作类型', 
+	private TextView flowmeterAccuracyLevel;//流量计准确度等级',
+	private TextView flowmeterCommonFlow;//流量计常用流量',
+	private TextView flowmeterRemarks;//备注',
+
+	private TextView entrustedPerson;//委托人',
+	private TextView entrustedDate;//委托日期',
+	
+	private Button btn_SendFlowmeter,btn_return;
+	
+	private Commission order = null;
+	private Handler handler = new Handler(){
+		public void handleMessage(Message msg) 
+		{
+			switch (msg.what) 
+			{
+				case PublicUtil.RESP_CHANGE_STATE_INFO:
+				{
+					String res=msg.obj+"";
+					DebugLog.i(TAG, "RESP_CHANGE_STATE_INFO:"+res);
+					ParseCommitJson(res);
+					break;
+				}
+			}
+		}
+	};
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO 自动生成的方法存根
+		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		setContentView(R.layout.activity_commit);
+		
+		initView();
+	}
+	private void initView() {
+		// TODO 自动生成的方法存根
+		entrustedInspectionNumber = (TextView) findViewById(R.id.entrustedInspectionNumber);//送检样品编号',
+		clientsContacts = (TextView) findViewById(R.id.clientsContacts);//联系人',
+		clientsEmployer = (TextView) findViewById(R.id.clientsEmployer);//单位',
+		clientsEmployerAddress = (TextView) findViewById(R.id.clientsEmployerAddress);//单位地址',
+		clientsPhone = (TextView) findViewById(R.id.clientsPhone);//电话',
+		clientsPostcode = (TextView) findViewById(R.id.clientsPostcode);//邮政编码'
+		clientRequirement = (TextView) findViewById(R.id.clientRequirement);//客户要求,
+		certificateClientsEmployer = (TextView) findViewById(R.id.certificateClientsEmployer);//证书客户单位,
+		certificateClientsEmployerAddress = (TextView) findViewById(R.id.certificateClientsEmployerAddress);//证书客户单位地址,
+		flowmeterName = (TextView) findViewById(R.id.flowmeterName);//流量计名称',
+		flowmeterCaliber = (TextView) findViewById(R.id.flowmeterCaliber);//流量计口径',
+		flowmeterInside = (TextView) findViewById(R.id.flowmeterInside);//内径',
+		flowmeterLength = (TextView) findViewById(R.id.flowmeterLength);//长度',
+		flowmeterModel = (TextView) findViewById(R.id.flowmeterModel);//流量计型号',
+		flowmeterFactoryNumber = (TextView) findViewById(R.id.flowmeterFactoryNumber);//流量计出厂编号'
+		flowmeterManufactor = (TextView) findViewById(R.id.flowmeterManufactor);//流量计生产厂家',
+		flowmeterUseState = (TextView) findViewById(R.id.flowmeterUseState);//流量计使用状态',
+		flowmeterNominalFlow = (TextView) findViewById(R.id.flowmeterNominalFlow);//标称流量',
+		flowmeterKcoefficient = (TextView) findViewById(R.id.flowmeterKcoefficient);//K系数',
+		flowmeterPressureLevel = (TextView) findViewById(R.id.flowmeterPressureLevel);//流量计耐压等级',
+		flowmeterAccessories = (TextView) findViewById(R.id.flowmeterAccessories);//其他附件',
+		flowmeterAppearance = (TextView) findViewById(R.id.flowmeterAppearance);//外观',
+		sampleDocuments = (TextView) findViewById(R.id.sampleDocuments);//样品资料',
+		flowmeterWorkTypes = (TextView) findViewById(R.id.flowmeterWorkTypes);//工作类型', 
+		flowmeterAccuracyLevel = (TextView) findViewById(R.id.flowmeterAccuracyLevel);//流量计准确度等级',
+		flowmeterCommonFlow = (TextView) findViewById(R.id.flowmeterCommonFlow);//流量计常用流量',
+		flowmeterRemarks = (TextView) findViewById(R.id.flowmeterRemarks);//备注',
+		entrustedPerson = (TextView) findViewById(R.id.entrustedPerson);//委托人',
+		entrustedDate = (TextView) findViewById(R.id.entrustedDate);//委托日期',
+		
+		btn_SendFlowmeter = (Button) findViewById(R.id.btn_SendFlowmeter);
+		btn_return = (Button) findViewById(R.id.btn_return);
+		btn_SendFlowmeter.setOnClickListener(this);
+		btn_return.setOnClickListener(this);
+	}
+	@Override
+	protected void onStart() {
+		// TODO 自动生成的方法存根
+		super.onStart();
+		Intent intent = getIntent();
+		order = (Commission) intent.getSerializableExtra("Commission");
+		if(order != null)
+		{
+			entrustedInspectionNumber.setText(order.getEntrustedInspectionNumber());
+			clientsContacts.setText(order.getClientsContacts());
+			clientsEmployer.setText(order.getClientsEmployer());
+			clientsEmployerAddress.setText(order.getClientsEmployerAddress());
+			clientsPhone.setText(order.getClientsPhone());
+			clientsPostcode.setText(order.getClientsPostcode());
+			clientRequirement.setText(order.getClientsRequirement());
+			certificateClientsEmployer.setText(order.getCertificateClientsEmployer());
+			certificateClientsEmployerAddress.setText(order.getCertificateClientsEmployerAddress());
+			flowmeterName.setText(order.getFlowmeterName());
+			flowmeterCaliber.setText(order.getFlowmeterCaliber());
+			flowmeterInside.setText(order.getFlowmeterInside());
+			flowmeterLength.setText(order.getFlowmeterLength());
+			flowmeterModel.setText(order.getFlowmeterModel());
+			flowmeterFactoryNumber.setText(order.getFlowmeterFactoryNumber());
+			flowmeterManufactor.setText(order.getFlowmeterManufactor());
+			flowmeterUseState.setText(order.getFlowmeterUseState());
+			flowmeterNominalFlow.setText(order.getFlowmeterNominalFlow());
+			flowmeterKcoefficient.setText(order.getFlowmeterKcoefficient());
+			flowmeterPressureLevel.setText(order.getFlowmeterPosition());
+			flowmeterAccessories.setText(order.getFlowmeterAccessories());
+			flowmeterAppearance.setText(order.getFlowmeterAppearance());
+			sampleDocuments.setText(order.getSampleDocuments());
+			flowmeterWorkTypes.setText(order.getFlowmeterWorkTypes());
+			flowmeterAccuracyLevel.setText(order.getFlowmeterAccuracyLevel());
+			flowmeterCommonFlow.setText(order.getFlowmeterCommonFlow());
+			flowmeterRemarks.setText(order.getRemarks());
+			entrustedPerson.setText(order.getEntrustedPerson());
+			entrustedDate.setText(order.getEntrustedDate());
+		}
+	}
+	
+	protected void ParseCommitJson(String result)
+	{
+		try
+		{
+			JSONObject jsonObject = new JSONObject(result).getJSONObject("result");
+			
+			int state = jsonObject.getInt("state");	
+			if(state == 1)
+			{
+				PublicUtil.toastShow("操作成功。", context);
+				finish();
+			}
+			else
+			{
+				PublicUtil.toastShow("操作失败，请重新尝试！", context);
+			}
+			
+			JSONArray jsonArr = jsonObject.getJSONArray("msg");
+			
+			int totalCount=jsonObject.getInt("totalCount");	
+			
+			DebugLog.i(TAG,"totalCount："+totalCount+",size="+jsonArr.length());
+			
+			if(totalCount == jsonArr.length())
+			{
+				DebugLog.i(TAG,"获取设备："+totalCount);
+				order = null;
+				 for(int i=0;i<jsonArr.length();i++)
+				 {
+					 JSONObject jsonObj=(JSONObject)jsonArr.get(i);
+					 Commission order = new Commission();
+					 
+					 order.setId(jsonObj.getInt("entrustedInspectionId"));
+					 order.setFlowmeterId(jsonObj.getString("flowmeterId"));
+					 
+					 order.setClientsContacts(jsonObj.getString("clientsContacts"));
+					 order.setClientsEmployer(jsonObj.getString("clientsEmployer"));
+					 order.setClientsEmployerAddress(jsonObj.getString("clientsEmployerAddress"));
+					 order.setClientsPhone(jsonObj.getString("clientsPhone"));
+					 order.setClientsEmail(jsonObj.getString("clientsEmail"));
+					 order.setClientsPostcode(jsonObj.getString("clientsPostcode"));
+					 
+					 order.setFlowmeterName(jsonObj.getString("flowmeterName"));
+					 order.setFlowmeterCaliber(jsonObj.getString("flowmeterCaliber"));
+					 order.setFlowmeterInside(jsonObj.getString("flowmeterInside"));
+					 order.setFlowmeterLength(jsonObj.getString("flowmeterLength"));
+					 order.setFlowmeterModel(jsonObj.getString("flowmeterModel"));
+					 order.setFlowmeterFactoryNumber(jsonObj.getString("flowmeterFactoryNumber"));
+					 order.setFlowmeterManufactor(jsonObj.getString("flowmeterManufactor"));
+					 order.setFlowmeterUseState(jsonObj.getString("flowmeterUseState"));
+					 order.setFlowmeterNominalFlow(jsonObj.getString("flowmeterNominalFlow"));
+					 
+					 order.setFlowmeterPosition(jsonObj.getString("flowmeterPosition"));
+					 order.setFlowmeterResult(jsonObj.getString("checkingQualified"));
+					 
+					 order.setFlowmeterKcoefficient(jsonObj.getString("flowmeterKcoefficient"));
+					 order.setFlowmeterPressureLevel(jsonObj.getString("flowmeterPressureLevel"));
+					 order.setFlowmeterAccessories(jsonObj.getString("flowmeterAccessories"));
+					 order.setFlowmeterAppearance(jsonObj.getString("flowmeterAppearance"));
+					 order.setSampleDocuments(jsonObj.getString("sampleDocuments"));
+					 order.setFlowmeterWorkTypes(jsonObj.getString("flowmeterWorkTypes"));
+					 order.setFlowmeterAccuracyLevel(jsonObj.getString("flowmeterAccuracyLevel"));
+					 order.setFlowmeterCommonFlow(jsonObj.getString("flowmeterCommonFlow"));
+					 order.setRemarks(jsonObj.getString("Remarks"));
+					 order.setEntrustedPerson(jsonObj.getString("entrustedPerson"));
+					 order.setEntrustedDate(jsonObj.getString("entrustedDate"));
+					 order.setSampleRecipient(jsonObj.getString("sampleRecipient"));
+					 order.setSampleTakePerson(jsonObj.getString("sampleTakePerson"));
+					 order.setSampleTakeDate(jsonObj.getString("sampleTakeDate"));
+					 order.setSampleSentPerson(jsonObj.getString("sampleSentPerson"));
+						
+					 order.setAccessoriesFrontStraightPipe(jsonObj.getInt("accessoriesFrontStraightPipe"));
+					 order.setAccessoriesRearStraightPipe(jsonObj.getInt("accessoriesRearStraightPipe"));
+					 order.setAccessoriesRectifier(jsonObj.getInt("accessoriesRectifier"));
+					 order.setAccessoriesJoint(jsonObj.getInt("accessoriesJoint"));
+					 order.setAccessoriesShim(jsonObj.getInt("accessoriesShim"));
+					 order.setAccessoriesWasher(jsonObj.getInt("accessoriesWasher"));
+					 order.setAccessoriesBoltNut(jsonObj.getInt("accessoriesBoltNut"));
+
+					 order.setCheckingProject(jsonObj.getString("checkingProject"));
+					 order.setCheckingProcessState(jsonObj.getInt("checkingProcessState"));
+					 order.setCheckingPrice(jsonObj.getString("checkingPrice"));
+					 order.setCheckingDate(jsonObj.getString("checkingDate"));
+					 order.setContractId(jsonObj.getInt("contractId"));
+					 
+					 this.order = order;
+					 DebugLog.i(TAG,order.toString());
+				 }
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	public void onClick(View v) {
+		// TODO 自动生成的方法存根
+		switch (v.getId()) {
+		case R.id.btn_SendFlowmeter:
+		{
+			if(order.getCheckingProcessState() == 8)
+			{
+				GetDataTask mrequstTask=new GetDataTask(context, handler );
+				StringBuffer sb=new StringBuffer();
+				sb.append("t="+PublicUtil.REQ_CHANGE_STATE);
+				sb.append("&flowmeterId="+order.getFlowmeterId());
+				sb.append("&checkingProcessState=9");
+
+				mrequstTask.setHandlerCode(PublicUtil.RESP_CHANGE_STATE_INFO);
+				mrequstTask.setParams(sb.toString());
+				mrequstTask.execute("");
+			}
+			else if(order.getCheckingProcessState() > 8)
+			{
+				PublicUtil.toastShow("流量计已经发送！", context);
+			}
+			else
+			{
+				PublicUtil.toastShow("流量计未到收发室，不能发送！", context);
+			}
+			
+			break;
+		}
+		case R.id.btn_return:
+		{
+			finish();
+			break;
+		}
+
+		default:
+			break;
+		}
+	}
+	
+}

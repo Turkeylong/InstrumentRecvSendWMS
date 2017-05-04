@@ -1,0 +1,280 @@
+package com.rfid.instrument.activity;
+
+import java.util.ArrayList;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import com.rfid.instrument.R;
+import com.rfid.instrument.adapter.DeviceListAdapter;
+import com.rfid.instrument.fragment.ContentFragment.BTNBroadcastReceiver;
+import com.rfid.instrument.util.Commission;
+import com.rfid.instrument.util.DEVICE;
+import com.rfid.instrument.util.GetDataTask;
+import com.rfid.instrument.util.PublicUtil;
+import com.rfid.sdk.public_utils.DebugLog;
+import com.rfid.sdk.public_utils.Public;
+import com.rfid.sdk.rfidclass.TAG_TID;
+
+import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+import android.view.Window;
+import android.widget.ListView;
+
+public class DeviceActivity extends Activity {
+	protected static final String TAG = "DeviceActivity";
+	private Activity activity = DeviceActivity.this;
+	private ListView invdevicelist;
+	private ArrayList<TAG_TID> tagTidList = new ArrayList();
+	private ArrayList<DEVICE> deviceList = new ArrayList();
+	private DeviceListAdapter device_adp;
+	private GetDataTask mrequstTask = null;
+	private ArrayList<Commission> orderList = new ArrayList();
+	private BTNBroadcastReceiver receiver;
+	private Handler handler=new Handler()
+	{
+		public void handleMessage(Message msg) 
+		{
+			switch (msg.what) 
+			{
+				case PublicUtil.RESP_DEVICE_INFO:
+				{
+					String res=msg.obj+"";
+					DebugLog.i(TAG, "RESP_DEVICE_INFO:"+res);
+					PraseJSON(res);
+					ShowDeviceList();
+					break;
+				}
+			}
+		}
+	};
+	
+	public class BTNBroadcastReceiver extends BroadcastReceiver
+	{
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// TODO 自动生成的方法存根
+			String action = intent.getAction();
+			if(action.toString().equals(Public.BROADCAST_BUTTON_ACTION))
+			{
+				String msg = (String) intent.getExtras().get("button");
+				DebugLog.d(TAG,"SendMsg:"+msg);
+				
+				if(msg.equals("right_btn_Down"))
+				{
+					DebugLog.d(TAG,"查找物资开始");
+				}
+				else if(msg.equals("right_btn_Up"))
+				{
+					DebugLog.d(TAG,"查找物资结束");
+//					deviceList.clear();
+//					ArrayList<TAG_TID> list = (ArrayList<TAG_TID>) getIntent().getSerializableExtra("deviceList");
+//					PraseEPC(list);
+//					DebugLog.d(TAG, tagTidList.toString());
+				}
+			}
+		}
+		
+	}
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO 自动生成的方法存根
+		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		setContentView(R.layout.activity_devicelist);
+		
+		initView();
+		
+		IntentFilter filter = new IntentFilter();  
+        filter.addAction(Public.BROADCAST_BUTTON_ACTION); 
+        receiver = new BTNBroadcastReceiver();
+        registerReceiver(receiver, filter); 
+        
+		deviceList.clear();
+		Intent intent = getIntent();
+		ArrayList<TAG_TID> list = (ArrayList<TAG_TID>) intent.getSerializableExtra("deviceList");
+		PraseEPC(list);
+		DebugLog.d(TAG, tagTidList.toString());
+	}
+
+	private void initView() {
+		// TODO 自动生成的方法存根
+		invdevicelist = (ListView) findViewById(R.id.invdevicelist);
+		device_adp = new DeviceListAdapter(activity,deviceList);
+		invdevicelist.setAdapter(device_adp);
+	}
+
+	@Override
+	protected void onStart() {
+		// TODO 自动生成的方法存根
+		super.onStart();
+
+		//device_adp.notifyDataSetChanged();
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO 自动生成的方法存根
+		super.onResume();
+	}
+	
+	private void PraseEPC(ArrayList<TAG_TID> list) {
+		// TODO 自动生成的方法存根
+		StringBuffer sb=new StringBuffer();
+		sb.append("t=102");
+		//sb.append("t="+PublicUtil.REQ_FLOWMETER_INFO);
+		sb.append("&flowmeterIdList=");
+		for(TAG_TID tmp:list)
+		{
+            String epc = tmp.getEPC();
+            DebugLog.d("test", "epc="+epc);
+            if(epc.length() != 32)
+            {
+            	continue;
+            }
+            
+            long deviceid = Long.valueOf(epc.substring(24,32),16);
+            DebugLog.d("test", "epc="+epc+",deviceid="+deviceid);
+            sb.append("'"+String.valueOf(deviceid)+"',");
+        }
+		sb.deleteCharAt(sb.length()-1);
+		
+		mrequstTask=new GetDataTask(activity, handler);
+		
+		mrequstTask.setHandlerCode(PublicUtil.RESP_DEVICE_INFO);
+		mrequstTask.setParams(sb.toString());
+		mrequstTask.execute("");
+	}
+	
+	private void PraseJSON(String result) {
+		// TODO 自动生成的方法存根
+		try
+		{
+			JSONObject jsonObject = new JSONObject(result).getJSONObject("result");
+			JSONArray jsonArr = jsonObject.getJSONArray("DataList");
+			
+			int totalCount=jsonObject.getInt("totalCount");	
+			
+			Log.i(TAG,"totalCount："+totalCount+",size="+jsonArr.length());
+			
+			if(totalCount == jsonArr.length())
+			{
+				Log.i(TAG,"获取设备："+totalCount);
+				 for(int i=0;i<jsonArr.length();i++)
+				 {
+					 JSONObject jsonObj=(JSONObject)jsonArr.get(i);
+					 Commission order = new Commission();
+					 
+					 order.setId(jsonObj.getInt("entrustedInspectionId"));
+					 order.setEntrustedInspectionNumber(jsonObj.getString("entrustedInspectionNumber"));
+					 order.setFlowmeterId(jsonObj.getString("flowmeterId"));
+					 
+					 order.setClientsContacts(jsonObj.getString("clientsContacts"));
+					 order.setClientsEmployer(jsonObj.getString("clientsEmployer"));
+					 order.setClientsEmployerAddress(jsonObj.getString("clientsEmployerAddress"));
+					 order.setClientsPhone(jsonObj.getString("clientsPhone"));
+					 order.setClientsEmail(jsonObj.getString("clientsEmail"));
+					 order.setClientsPostcode(jsonObj.getString("clientsPostcode"));
+					 
+					 order.setClientsRequirement(jsonObj.getString("clientsRequirement"));
+					 
+					 order.setFlowmeterName(jsonObj.getString("flowmeterName"));
+					 order.setFlowmeterCaliber(jsonObj.getString("flowmeterCaliber"));
+					 order.setFlowmeterInside(jsonObj.getString("flowmeterInside"));
+					 order.setFlowmeterLength(jsonObj.getString("flowmeterLength"));
+					 order.setFlowmeterModel(jsonObj.getString("flowmeterModel"));
+					 order.setFlowmeterFactoryNumber(jsonObj.getString("flowmeterFactoryNumber"));
+					 order.setFlowmeterManufactor(jsonObj.getString("flowmeterManufactor"));
+					 order.setFlowmeterUseState(jsonObj.getString("flowmeterUseState"));
+					 order.setFlowmeterNominalFlow(jsonObj.getString("flowmeterNominalFlow"));
+					 
+					 order.setFlowmeterPosition(jsonObj.getString("flowmeterPosition"));
+					 order.setFlowmeterResult(jsonObj.getString("checkingQualified"));
+					 
+					 order.setFlowmeterKcoefficient(jsonObj.getString("flowmeterKcoefficient"));
+					 order.setFlowmeterPressureLevel(jsonObj.getString("flowmeterPressureLevel"));
+					 order.setFlowmeterAccessories(jsonObj.getString("flowmeterAccessories"));
+					 order.setFlowmeterAppearance(jsonObj.getString("flowmeterAppearance"));
+					 order.setSampleDocuments(jsonObj.getString("sampleDocuments"));
+					 order.setFlowmeterWorkTypes(jsonObj.getString("flowmeterWorkTypes"));
+					 order.setFlowmeterAccuracyLevel(jsonObj.getString("flowmeterAccuracyLevel"));
+					 order.setFlowmeterCommonFlow(jsonObj.getString("flowmeterCommonFlow"));
+					 order.setRemarks(jsonObj.getString("Remarks"));
+					 order.setEntrustedPerson(jsonObj.getString("entrustedPerson"));
+					 order.setEntrustedDate(jsonObj.getString("entrustedDate"));
+					 order.setSampleRecipient(jsonObj.getString("sampleRecipient"));
+					 order.setSampleTakePerson(jsonObj.getString("sampleTakePerson"));
+					 order.setSampleTakeDate(jsonObj.getString("sampleTakeDate"));
+					 order.setSampleSentPerson(jsonObj.getString("sampleSentPerson"));
+						
+					 order.setAccessoriesFrontStraightPipe(PublicUtil.getIntValue(jsonObj.getString("accessoriesFrontStraightPipe")));
+					 order.setAccessoriesRearStraightPipe(PublicUtil.getIntValue(jsonObj.getString("accessoriesRearStraightPipe")));
+					 order.setAccessoriesRectifier(PublicUtil.getIntValue(jsonObj.getString("accessoriesRectifier")));
+					 order.setAccessoriesJoint(PublicUtil.getIntValue(jsonObj.getString("accessoriesJoint")));
+					 order.setAccessoriesShim(PublicUtil.getIntValue(jsonObj.getString("accessoriesShim")));
+					 order.setAccessoriesWasher(PublicUtil.getIntValue(jsonObj.getString("accessoriesWasher")));
+					 order.setAccessoriesBoltNut(PublicUtil.getIntValue(jsonObj.getString("accessoriesBoltNut")));
+
+					 order.setCheckingProject(jsonObj.getString("checkingProject"));
+					 order.setCheckingProcessState(PublicUtil.getIntValue(jsonObj.getString("checkingProcessState")));
+					 order.setCheckingPrice(jsonObj.getString("checkingPrice"));
+					 order.setCheckingDate(jsonObj.getString("checkingDate"));
+					 order.setContractId(jsonObj.getInt("contractId"));
+					 
+					 
+					 order.setCertificateClientsEmployer(jsonObj.getString("certificateClientsEmployer"));
+					 order.setCertificateClientsEmployerAddress(jsonObj.getString("certificateClientsEmployerAddress"));
+					 
+					 Log.i(TAG,order.toString());
+					 
+					 orderList.add(order);
+					 
+				 }	
+			}
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	private void ShowDeviceList() {
+		// TODO 自动生成的方法存根
+		int count = 1;
+		deviceList.clear();
+		for(Commission tmp:orderList)
+		{
+			DEVICE dev = new DEVICE();
+			DebugLog.d("test", tmp.toString());
+			if(tmp.getFlowmeterFactoryNumber().isEmpty())
+				continue;
+			try
+			{
+				//long deviceid = Long.valueOf(tmp.getFlowmeterFactoryNumber(),16);
+				if((!tmp.getFlowmeterName().isEmpty()) && (!tmp.getFlowmeterModel().isEmpty()))
+				{
+					dev.setId(count++);
+					dev.setDeviceState(tmp.getCheckingProcessState());
+					dev.setDevicePosition(tmp.getFlowmeterPosition());
+					dev.setDeviceName(tmp.getFlowmeterName()+tmp.getFlowmeterModel());
+					dev.setOrder(tmp.getId());
+					deviceList.add(dev);
+				}
+
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		device_adp.notifyDataSetChanged();
+	}
+}

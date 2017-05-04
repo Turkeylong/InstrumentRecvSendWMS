@@ -1,0 +1,168 @@
+package com.rfid.instrument.fragment;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.app.ListFragment;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ListView;
+
+import com.rfid.instrument.R;
+import com.rfid.instrument.adapter.HeaderListAdapter;
+import com.rfid.instrument.util.BitmapUtil;
+import com.rfid.instrument.util.PublicUtil;
+
+public class HeaderFragment extends ListFragment {
+	private Context context;
+	private HeaderListAdapter headerList;
+	//private ListView header_listview;
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		// TODO 自动生成的方法存根
+		super.onCreate(savedInstanceState);
+		context = getActivity();
+		
+		List<Map<String,Object>> list=new ArrayList<Map<String,Object>>();
+		Map<String,Object> map=new HashMap<String, Object>();
+		Bitmap bmp=null;  
+		
+		bmp=BitmapUtil.drawableToBitmap(getActivity(), R.drawable.find);	
+		map=new HashMap<String, Object>();
+		map.put("img", bmp);				//图片资源
+		map.put("type", "find_info");		//物品标题 
+		map.put("text", "查询委托单");	//物品名称
+		list.add(map);						//添加一项
+		bmp=null;
+		
+		if(PublicUtil.width > PublicUtil.height)
+		{
+			bmp=BitmapUtil.drawableToBitmap(getActivity(), R.drawable.addmat);	
+			map=new HashMap<String, Object>();
+			map.put("img", bmp);
+			map.put("type", "addmat");
+			map.put("text", "流量计流转状态");
+			list.add(map);
+			bmp=null;
+		}
+		
+		if(PublicUtil.width > PublicUtil.height)
+		{
+			bmp=BitmapUtil.drawableToBitmap(getActivity(), R.drawable.mastorage);	
+			map=new HashMap<String, Object>();
+			map.put("img", bmp);
+			map.put("type", "view");
+			map.put("text", "浏览");
+			list.add(map);
+			bmp=null;
+			
+			bmp=BitmapUtil.drawableToBitmap(getActivity(), R.drawable.myrecord);	
+			map=new HashMap<String, Object>();
+			map.put("img", bmp);
+			map.put("type", "find");
+			map.put("text", "合同查询");
+			list.add(map);
+			bmp=null;
+		
+			
+//			bmp=BitmapUtil.drawableToBitmap(getActivity(), R.drawable.userhead);	
+//			map=new HashMap<String, Object>();
+//			map.put("img", bmp);
+//			map.put("type", "userhead");
+//			map.put("text", "合同管理");
+//			list.add(map);
+//			bmp=null;
+			
+			bmp=BitmapUtil.drawableToBitmap(getActivity(), R.drawable.certificate);	
+			map=new HashMap<String, Object>();
+			map.put("img", bmp);
+			map.put("type", "certificate");
+			map.put("text", "证书管理");
+			list.add(map);
+			bmp=null;
+		}
+		
+		bmp=BitmapUtil.drawableToBitmap(getActivity(), R.drawable.editpwd);	
+		map=new HashMap<String, Object>();
+		map.put("img", bmp);
+		map.put("type", "editpwd");
+		map.put("text", "密码修改");
+		list.add(map);
+		bmp=null;
+		
+		bmp=BitmapUtil.drawableToBitmap(getActivity(), R.drawable.exception);	
+		map=new HashMap<String, Object>();
+		map.put("img", bmp);
+		map.put("type", "exception");
+		map.put("text", "系统异常信息");
+		list.add(map);
+		bmp=null;
+		
+		bmp = BitmapUtil.drawableToBitmap(getActivity(), R.drawable.exit);
+		map = new HashMap<String, Object>();
+		map.put("img", bmp);
+		map.put("type", "exit");
+		map.put("text", "退出系统");
+		list.add(map);
+		bmp = null;
+		
+		System.out.println(list.toString());
+		headerList = new HeaderListAdapter(context, list);
+		//header_listview.setAdapter(headerList);
+		setListAdapter(headerList);
+	}
+
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		// TODO 自动生成的方法存根
+		if (container == null) {
+	          return null;
+	       }
+		//View rootView = inflater.inflate(R.layout.fragment_header, null);
+		//header_listview = (ListView) rootView.findViewById(R.id.left_listview);
+		return  super.onCreateView(inflater, container, savedInstanceState);
+	}
+
+
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id) {
+		// TODO 自动生成的方法存根
+		super.onListItemClick(l, v, position, id);
+		//点击按钮后，加载右边的Fragment
+		FragmentManager manager = getFragmentManager();
+		FragmentTransaction transaction = manager.beginTransaction();//.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);  
+		ContentFragment detailFragment = new ContentFragment();
+		//记住：这个地方必须用replace，而不是用add
+		if(PublicUtil.width > PublicUtil.height)
+		{
+			transaction.replace(R.id.fragment_container, detailFragment, "detailFragment");
+		}
+		else
+		{
+			transaction.replace(R.id.fragment_header, detailFragment, "detailFragment");
+			//transaction.hide(this).show(detailFragment).commit(); // 隐藏当前的fragment，显示下一个
+		}
+		
+		//将中间的item的内容放到Bundle对象当中，然后放到最右侧Frament的参数当中
+		String item = headerList.getItem(position).get("text")+"";
+		Bundle args = new Bundle();
+		args.putInt("type", position);
+		args.putString("item",item);
+		detailFragment.setArguments(args);
+		//Toast.makeText(getActivity(), item, 1).show();  
+		transaction.commit();
+	}
+
+	
+}

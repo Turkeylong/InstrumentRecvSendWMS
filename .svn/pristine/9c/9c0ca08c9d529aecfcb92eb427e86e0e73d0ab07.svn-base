@@ -1,0 +1,730 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="45dp"
+        android:background="@color/darkblue" >
+
+        <TextView
+            android:id="@+id/gobacktext"
+            style="@style/infotextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:text="@string/back"
+            android:textColor="@color/white" />
+
+        <ImageView
+            android:id="@+id/backImg"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/read_left" />
+
+        <TextView
+            style="@style/titleStyle"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="@string/app_name" />
+
+        <TextView
+            android:id="@+id/invtitle"
+            style="@style/infotextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:text="@string/inv_tag"
+            android:textColor="@color/white" />
+
+        <ImageView
+            android:id="@+id/invImg"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/inv_right" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center"
+        android:background="@drawable/buleback"
+        android:orientation="horizontal" >
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/project_name"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <View
+                style="@style/longLineStyle"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="10dp" />
+
+            <ScrollView
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:scrollbars="none" >
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+
+                    <TableLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/black"
+                        android:stretchColumns="2" >
+
+                        <TextView
+                            android:id="@+id/table_title"
+                            style="@style/tabletextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:text="送检委托单" />
+
+                        <TableRow style="@style/tableRowStyle" >
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:gravity="center"
+                                android:text="顾客信息" />
+
+                            <TableLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="4"
+                                android:stretchColumns="1,3" >
+
+                                <TableRow style="@style/tableRowStyle" >
+
+                                    <TextView
+                                        style="@style/tabletextStyle"
+                                        android:text="送检样品编号" />
+
+                                    <EditText
+                                        android:id="@+id/edit_entrustedInspectionNumber"
+                                        style="@style/tabletextStyle" />
+
+                                    <TextView
+                                        android:id="@+id/clientsContacts"
+                                        style="@style/tabletextStyle"
+                                        android:text="联系人" />
+
+                                    <EditText 
+                                        android:id="@+id/edit_clientsContacts"
+                                        style="@style/tabletextStyle" />
+                                </TableRow>
+
+                                <TableRow style="@style/tableRowStyle" >
+
+                                    <TextView
+                                        style="@style/tabletextStyle"
+                                        android:text="联系电话" />
+
+                                    <EditText
+                                        android:id="@+id/edit_clientsPhone"
+                                        style="@style/tabletextStyle" />
+
+                                    <TextView
+                                        style="@style/tabletextStyle"
+                                        android:text="邮政编码" />
+
+                                    <EditText
+                                        android:id="@+id/edit_clientsPostcode"
+                                        style="@style/tabletextStyle" />
+                                </TableRow>
+
+                                <TableRow style="@style/tableRowStyle" >
+
+                                    <TextView
+                                        style="@style/tabletextStyle"
+                                        android:text="送检顾客单位" />
+
+                                    <EditText
+                                        android:id="@+id/edit_clientsEmployer"
+                                        style="@style/tabletextStyle"
+                                        android:layout_column="1"
+                                        android:layout_span="3" />
+                                </TableRow>
+
+                                <TableRow style="@style/tableRowStyle" >
+
+                                    <TextView
+                                        style="@style/tabletextStyle"
+                                        android:text="送检顾客地址" />
+
+                                    <EditText
+                                        android:id="@+id/edit_clientsEmployerAddress"
+                                        style="@style/tabletextStyle"
+                                        android:layout_column="1"
+                                        android:layout_span="3" />
+                                </TableRow>
+
+                                <TableRow style="@style/tableRowStyle" >
+
+                                    <TextView
+                                        style="@style/tabletextStyle"
+                                        android:text="证书顾客单位" />
+
+                                    <EditText
+                                        android:id="@+id/edit_certificateClientsEmployer"
+                                        style="@style/tabletextStyle"
+                                        android:layout_column="1"
+                                        android:layout_span="3" />
+                                </TableRow>
+
+                                <TableRow style="@style/tableRowStyle" >
+
+                                    <TextView
+                                        style="@style/tabletextStyle"
+                                        android:text="证书顾客地址" />
+
+                                    <EditText
+                                        android:id="@+id/edit_certificateClientsEmployerAddress"
+                                        style="@style/tabletextStyle"
+                                        android:layout_column="1"
+                                        android:layout_span="3" />
+                                </TableRow>
+                            </TableLayout>
+                        </TableRow>
+
+                        <TableRow style="@style/tableRowStyle" >
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:gravity="center"
+                                android:text="流量计信息" />
+
+                            <TableLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="4"
+                                android:stretchColumns="1,3,5,7" >
+
+                                <TableRow style="@style/tableRowStyle" >
+
+                                    <TextView
+                                        style="@style/tabletextStyle"
+                                        android:text="名称" />
+
+                                    <EditText
+                                        android:id="@+id/edit_flowmeterName"
+                                        style="@style/tabletextStyle" />
+
+                                    <TextView
+                                        style="@style/tabletextStyle"
+                                        android:text="口径" />
+
+                                    <EditText 
+                                        android:id="@+id/edit_flowmeterCaliber"
+                                        style="@style/tabletextStyle" />
+
+                                    <TextView
+                                        style="@style/tabletextStyle"
+                                        android:text="实际内径" />
+
+                                    <EditText 
+                                        android:id="@+id/edit_flowmeterInside"
+                                        style="@style/tabletextStyle" />
+
+                                    <TextView
+                                        style="@style/tabletextStyle"
+                                        android:text="长度" />
+
+                                    <EditText 
+                                        android:id="@+id/edit_flowmeterLength"
+                                        style="@style/tabletextStyle" />
+                                </TableRow>
+
+                                <TableRow style="@style/tableRowStyle" >
+
+                                    <TextView
+                                        style="@style/tabletextStyle"
+                                        android:text="型号" />
+
+                                    <EditText
+                                        android:id="@+id/edit_flowmeterModel"
+                                        style="@style/tabletextStyle" />
+
+                                    <TextView
+                                        style="@style/tabletextStyle"
+                                        android:text="出厂编号" />
+
+                                    <EditText 
+                                        android:id="@+id/edit_flowmeterFactoryNumber"
+                                        style="@style/tabletextStyle" />
+
+                                    <TextView
+                                        style="@style/tabletextStyle"
+                                        android:text="生产厂家" />
+
+                                    <EditText 
+                                        android:id="@+id/edit_flowmeterManufactor"
+                                        style="@style/tabletextStyle" />
+
+                                    <TextView
+                                        style="@style/tabletextStyle"
+                                        android:text="使用状态" />
+
+                                    <EditText 
+                                        android:id="@+id/edit_flowmeterUseState"
+                                        style="@style/tabletextStyle" />
+                                </TableRow>
+
+                                <TableRow style="@style/tableRowStyle" >
+
+                                    <TextView
+                                        style="@style/tabletextStyle"
+                                        android:text="标称流量" />
+
+                                    <EditText
+                                        android:id="@+id/edit_flowmeterNominalFlow"
+                                        style="@style/tabletextStyle" />
+
+                                    <TextView
+                                        style="@style/tabletextStyle"
+                                        android:text="k系数" />
+
+                                    <EditText 
+                                        android:id="@+id/edit_flowmeterKcoefficient"
+                                        style="@style/tabletextStyle" />
+
+                                    <TextView
+                                        style="@style/tabletextStyle"
+                                        android:text="耐压等级" />
+
+                                    <EditText
+                                        android:id="@+id/edit_flowmeterPressureLevel"
+                                        style="@style/tabletextStyle"
+                                        android:layout_column="5"
+                                        android:layout_span="3" />
+                                </TableRow>
+                            </TableLayout>
+                        </TableRow>
+
+                        <TableRow style="@style/tableRowStyle" >
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:gravity="center"
+                                android:text="工作要求" />
+
+                            <TableLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="4"
+                                android:stretchColumns="1,3,5,7" >
+
+                                <TableRow style="@style/tableRowStyle" >
+
+                                    <TextView
+                                        style="@style/tabletextStyle"
+                                        android:text="工作类型" />
+
+                                    <EditText 
+                                        android:id="@+id/edit_flowmeterWorkTypes"
+                                        style="@style/tabletextStyle" />
+
+                                    <TextView
+                                        style="@style/tabletextStyle"
+                                        android:text="精准度等级" />
+
+                                    <EditText 
+                                        android:id="@+id/edit_flowmeterAccuracyLevel"
+                                        style="@style/tabletextStyle" />
+
+                                    <TextView
+                                        style="@style/tabletextStyle"
+                                        android:text="常用流量" />
+
+                                    <EditText
+                                        android:id="@+id/edit_flowmeterCommonFlow"
+                                        style="@style/tabletextStyle"
+                                        android:layout_column="5"
+                                        android:layout_span="3" />
+                                </TableRow>
+                            </TableLayout>
+                        </TableRow>
+
+                        <TableRow style="@style/tableRowStyle" >
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:gravity="center"
+                                android:text="随机附件" />
+
+                            <TableLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="4" >
+
+                                <TableRow
+                                    style="@style/tableRowStyle"
+                                    android:layout_margin="1dp"
+                                    android:background="@color/white" >
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="1dp"
+                                        android:background="@color/white"
+                                        android:text="前直管段"
+                                        android:textColor="@color/black"
+                                        android:textSize="18sp" />
+
+                                    <Spinner
+                                        android:id="@+id/spinner1"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:entries="@array/num"
+                                        android:textColor="@color/black" />
+                                    
+                                    <TextView android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="@color/white"
+                                        android:textColor="@color/black"
+                                        android:layout_marginRight="10dp"
+                                        android:text="根"
+                                        android:textSize="18sp" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="@color/white"
+                                        android:text="后直管段"
+                                        android:textColor="@color/black"
+                                        android:textSize="18sp" />
+
+                                    <Spinner
+                                        android:id="@+id/spinner2"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:entries="@array/num"
+                                        android:textColor="@color/black" />
+                                    
+                                    <TextView android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="@color/white"
+                                        android:textColor="@color/black"
+                                        android:layout_marginRight="10dp"
+                                        android:text="根"
+                                        android:textSize="18sp" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="@color/white"
+                                        android:text="整流器"
+                                        android:textColor="@color/black"
+                                        android:textSize="18sp" />
+
+                                    <Spinner
+                                        android:id="@+id/spinner3"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:entries="@array/num"
+                                        android:textColor="@color/black" />
+                                    
+                                    <TextView android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="@color/white"
+                                        android:textColor="@color/black"
+                                        android:layout_marginRight="10dp"
+                                        android:text="个"
+                                        android:textSize="18sp" />
+                                </TableRow>
+
+                                <TableRow
+                                    style="@style/tableRowStyle"
+                                    android:layout_margin="1dp"
+                                    android:background="@color/white" >
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="@color/white"
+                                        android:text="取压接头"
+                                        android:textColor="@color/black"
+                                        android:textSize="18sp" />
+
+                                    <Spinner
+                                        android:id="@+id/spinner4"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:entries="@array/num"
+                                        android:textColor="@color/black" />
+                                    
+                                    <TextView android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="@color/white"
+                                        android:textColor="@color/black"
+                                        android:layout_marginRight="10dp"
+                                        android:text="个"
+                                        android:textSize="18sp" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="@color/white"
+                                        android:text="垫片"
+                                        android:textColor="@color/black"
+                                        android:textSize="18sp" />
+
+                                    <Spinner
+                                        android:id="@+id/spinner5"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:entries="@array/num"
+                                        android:textColor="@color/black" />
+                                    
+                                    <TextView android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="@color/white"
+                                        android:textColor="@color/black"
+                                        android:layout_marginRight="10dp"
+                                        android:text="只"
+                                        android:textSize="18sp" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="@color/white"
+                                        android:text="垫圈"
+                                        android:textColor="@color/black"
+                                        android:textSize="18sp" />
+
+                                    <Spinner
+                                        android:id="@+id/spinner6"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:entries="@array/num"
+                                        android:textColor="@color/black" />
+                                    
+                                    <TextView android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="@color/white"
+                                        android:textColor="@color/black"
+                                        android:layout_marginRight="10dp"
+                                        android:text="只"
+                                        android:textSize="18sp" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="@color/white"
+                                        android:text="螺栓螺母"
+                                        android:textColor="@color/black"
+                                        android:textSize="18sp" />
+
+                                    <Spinner
+                                        android:id="@+id/spinner7"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginRight="1dp"
+                                        android:entries="@array/num" />
+                                    
+                                    <TextView android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="@color/white"
+                                        android:textColor="@color/black"
+                                        android:layout_marginRight="10dp"
+                                        android:text="套"
+                                        android:textSize="18sp" />
+                                </TableRow>
+                            </TableLayout>
+                        </TableRow>
+
+                        <TableRow
+                             android:gravity="center"
+                            style="@style/tableRowStyle" >
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:gravity="center"
+                                android:text="外观检查" />
+
+                            <CheckBox
+                                android:id="@+id/checkBox6"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="1dp"
+                                android:background="@color/white"
+                                android:gravity="left|center_vertical"
+                                android:button="@drawable/check_box_bg"
+                                android:text="铭牌信息完整"
+                                android:textColor="@color/black"
+                                android:textSize="18sp" />
+
+                            <CheckBox
+                                android:id="@+id/checkBox7"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@color/white"
+                                android:gravity="center"
+                                android:button="@drawable/check_box_bg"
+                                android:text="外观完好"
+                                android:textColor="@color/black"
+                                android:textSize="18sp" />
+
+                            <CheckBox
+                                android:id="@+id/checkBox8"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@color/white"
+                                android:gravity="left|center_vertical"
+                                android:button="@drawable/check_box_bg"
+                                android:text="流量计内腔清洁"
+                                android:textColor="@color/black"
+                                android:textSize="18sp" />
+
+                            <CheckBox
+                                android:id="@+id/checkBox9"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@color/white"
+                                android:gravity="left|center_vertical"
+                                android:button="@drawable/check_box_bg"
+                                android:text="流量计探头清洁"
+                                android:textColor="@color/black"
+                                android:textSize="18sp" />
+
+                            <CheckBox
+                                android:id="@+id/checkBox10"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="1dp"
+                                android:background="@color/white"
+                                android:gravity="left|center_vertical"
+                                android:button="@drawable/check_box_bg"
+                                android:text="涡轮转子转动正常"
+                                android:textColor="@color/black"
+                                android:textSize="18sp" />
+                        </TableRow>
+
+                        <TableRow style="@style/tableRowStyle" >
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:gravity="center"
+                                android:text="客户要求" />
+
+                            <EditText
+                                android:id="@+id/edit_clientRequirement"
+                                style="@style/tabletextStyle"
+                                android:layout_column="1"
+                                android:layout_span="7" />
+                        </TableRow>
+
+                        <TableRow style="@style/tableRowStyle" >
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:gravity="center"
+                                android:text="备注" />
+
+                            <EditText
+                                android:id="@+id/edit_flowmeterRemarks"
+                                style="@style/tabletextStyle"
+                                android:layout_column="1"
+                                android:layout_span="7" />
+                        </TableRow>
+                        
+                        
+                    </TableLayout>
+                    
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:orientation="horizontal" >
+                        
+                        <TextView
+                                android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:textSize="18sp"
+                                android:text="将流量计存放到收发棚："/>
+
+                        <EditText
+                            android:layout_width="50dp"
+                            android:layout_height="wrap_content"
+                                android:id="@+id/edit_flowmeterPosition"
+                                style="@style/tabletextStyle"
+                                android:layout_column="1"
+                                android:layout_span="7" />
+                     
+                     </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:orientation="horizontal" >
+                        
+                        <Button
+                            android:id="@+id/btnWriteFlowEPC"
+                            style="@style/buttonStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="写流量计电子标签" />
+                        
+                        <Button
+                            android:id="@+id/btnWriteCommEPC"
+                            style="@style/buttonStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="写委托单电子标签" />
+
+                        <Button
+                            android:id="@+id/btnCreateCommit"
+                            style="@style/buttonStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="确认接收流量计" />
+
+                        <Button
+                            android:id="@+id/btnReturn"
+                            style="@style/buttonStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="返回" />
+                    </LinearLayout>
+                </LinearLayout>
+            </ScrollView>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,552 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="45dp"
+        android:background="@color/darkblue" >
+
+        <TextView
+            android:id="@+id/gobacktext"
+            style="@style/infotextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:text="@string/back"
+            android:textColor="@color/white" />
+
+        <ImageView
+            android:id="@+id/backImg"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/read_left" />
+
+        <TextView
+            style="@style/titleStyle"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="@string/app_name" />
+
+        <TextView
+            android:id="@+id/invtitle"
+            style="@style/infotextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:text="@string/inv_tag"
+            android:textColor="@color/white" />
+
+        <ImageView
+            android:id="@+id/invImg"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/inv_right" />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/project_name"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TableLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/black"
+                android:stretchColumns="2" >
+
+                <TextView
+                    android:id="@+id/table_title"
+                    style="@style/tabletextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="送检委托单" />
+
+                <TableRow style="@style/tableRowStyle" >
+
+                    <TextView
+                        style="@style/tabletextStyle"
+                        android:gravity="center"
+                        android:text="顾客信息" />
+
+                    <TableLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="4"
+                        android:stretchColumns="*" >
+
+                        <TableRow style="@style/tableRowStyle" >
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:text="送检样品编号" />
+
+                            <TextView
+                                android:id="@+id/entrustedInspectionNumber"
+                                style="@style/tabletextStyle"
+                                android:text="A12354" />
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:text="联系人" />
+
+                            <TextView
+                                android:id="@+id/clientsContacts"
+                                style="@style/tabletextStyle"
+                                android:text="顾客" />
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:text="联系电话" />
+
+                            <TextView
+                                android:id="@+id/clientsPhone"
+                                style="@style/tabletextStyle"
+                                android:text="123456" />
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:text="邮政编码" />
+
+                            <TextView
+                                android:id="@+id/clientsPostcode"
+                                style="@style/tabletextStyle"
+                                android:text="432721" />
+                        </TableRow>
+
+                        <TableRow style="@style/tableRowStyle" >
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:text="送检客户单位" />
+
+                            <TextView
+                                android:id="@+id/clientsEmployer"
+                                style="@style/tabletextStyle"
+                                android:layout_column="1"
+                                android:layout_span="7"
+                                android:text="送检客户单位" />
+                        </TableRow>
+
+                        <TableRow style="@style/tableRowStyle" >
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:text="送检客户地址" />
+
+                            <TextView
+                                android:id="@+id/clientsEmployerAddress"
+                                style="@style/tabletextStyle"
+                                android:layout_column="1"
+                                android:layout_span="7"
+                                android:text="送检客户地址" />
+                        </TableRow>
+
+                        <TableRow style="@style/tableRowStyle" >
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:text="证书客户单位" />
+
+                            <TextView
+                                android:id="@+id/certificateClientsEmployer"
+                                style="@style/tabletextStyle"
+                                android:layout_column="1"
+                                android:layout_span="7"
+                                android:text="证书客户单位" />
+                        </TableRow>
+
+                        <TableRow style="@style/tableRowStyle" >
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:text="证书客户地址" />
+
+                            <TextView
+                                android:id="@+id/certificateClientsEmployerAddress"
+                                style="@style/tabletextStyle"
+                                android:layout_column="1"
+                                android:layout_span="7"
+                                android:text="证书客户地址" />
+                        </TableRow>
+                    </TableLayout>
+                </TableRow>
+
+                <TableRow style="@style/tableRowStyle" >
+
+                    <TextView
+                        style="@style/tabletextStyle"
+                        android:gravity="center"
+                        android:text="流量计信息" />
+
+                    <TableLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="4"
+                        android:stretchColumns="*" >
+
+                        <TableRow style="@style/tableRowStyle" >
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:text="名称" />
+
+                            <TextView
+                                android:id="@+id/flowmeterName"
+                                style="@style/tabletextStyle"
+                                android:text="A12354" />
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:text="口径" />
+
+                            <TextView
+                                android:id="@+id/flowmeterCaliber"
+                                style="@style/tabletextStyle"
+                                android:text="A12354" />
+                        </TableRow>
+
+                        <TableRow style="@style/tableRowStyle" >
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:text="型号" />
+
+                            <TextView
+                                android:id="@+id/flowmeterModel"
+                                style="@style/tabletextStyle"
+                                android:text="顾客" />
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:text="出厂编号" />
+
+                            <TextView
+                                android:id="@+id/flowmeterFactoryNumber"
+                                style="@style/tabletextStyle"
+                                android:text="顾客" />
+                        </TableRow>
+
+                        <TableRow style="@style/tableRowStyle" >
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:text="标称流量" />
+
+                            <TextView
+                                android:id="@+id/flowmeterNominalFlow"
+                                style="@style/tabletextStyle"
+                                android:text="111" />
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:text="k-系数" />
+
+                            <TextView
+                                android:id="@+id/flowmeterKcoefficient"
+                                style="@style/tabletextStyle"
+                                android:text="111" />
+                        </TableRow>
+                    </TableLayout>
+
+                    <TableLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="4"
+                        android:stretchColumns="*" >
+
+                        <TableRow style="@style/tableRowStyle" >
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:text="实际内径" />
+
+                            <TextView
+                                android:id="@+id/flowmeterInside"
+                                style="@style/tabletextStyle"
+                                android:text="123456" />
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:text="长度" />
+
+                            <TextView
+                                android:id="@+id/flowmeterLength"
+                                style="@style/tabletextStyle"
+                                android:text="432721" />
+                        </TableRow>
+
+                        <TableRow style="@style/tableRowStyle" >
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:text="生产厂家" />
+
+                            <TextView
+                                android:id="@+id/flowmeterManufactor"
+                                style="@style/tabletextStyle"
+                                android:text="顾客" />
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:text="使用状态" />
+
+                            <TextView
+                                android:id="@+id/flowmeterUseState"
+                                style="@style/tabletextStyle"
+                                android:text="顾客" />
+                        </TableRow>
+
+                        <TableRow style="@style/tableRowStyle" >
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:text="耐压等级" />
+
+                            <TextView
+                                android:id="@+id/flowmeterPressureLevel"
+                                style="@style/tabletextStyle"
+                                android:layout_column="1"
+                                android:layout_span="3"
+                                android:text="address in here." />
+                        </TableRow>
+                    </TableLayout>
+                </TableRow>
+
+                <TableRow style="@style/tableRowStyle" >
+
+                    <TextView
+                        style="@style/tabletextStyle"
+                        android:gravity="center"
+                        android:text="工作要求" />
+
+                    <TableLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="4"
+                        android:stretchColumns="*" >
+
+                        <TableRow style="@style/tableRowStyle" >
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:gravity="center"
+                                android:text="工作类型" />
+
+                            <TextView
+                                android:id="@+id/flowmeterWorkTypes"
+                                style="@style/tabletextStyle"
+                                android:gravity="center"
+                                android:text="1" />
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:gravity="center"
+                                android:text="精准度等级" />
+
+                            <TextView
+                                android:id="@+id/flowmeterAccuracyLevel"
+                                style="@style/tabletextStyle"
+                                android:gravity="center"
+                                android:text="2" />
+                        </TableRow>
+                    </TableLayout>
+
+                    <TableLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="4"
+                        android:stretchColumns="*" >
+
+                        <TableRow style="@style/tableRowStyle" >
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:gravity="center"
+                                android:text="常用流量" />
+
+                            <TextView
+                                android:id="@+id/flowmeterCommonFlow"
+                                style="@style/tabletextStyle"
+                                android:gravity="center"
+                                android:text="3" />
+                        </TableRow>
+                    </TableLayout>
+                </TableRow>
+
+                <TableRow style="@style/tableRowStyle" >
+
+                    <TextView
+                        style="@style/tabletextStyle"
+                        android:gravity="center"
+                        android:text="随机附件" />
+
+                    <TextView
+                        android:id="@+id/flowmeterAccessories"
+                        style="@style/tabletextStyle"
+                        android:layout_column="1"
+                        android:layout_span="2"
+                        android:gravity="center"
+                        android:text="随机附件" />
+                </TableRow>
+
+                <TableRow style="@style/tableRowStyle" >
+
+                    <TextView
+                        style="@style/tabletextStyle"
+                        android:gravity="center"
+                        android:text="外观检查" />
+
+                    <TextView
+                        android:id="@+id/flowmeterAppearance"
+                        style="@style/tabletextStyle"
+                        android:layout_column="1"
+                        android:layout_span="2"
+                        android:gravity="center"
+                        android:text="外观检查" />
+                </TableRow>
+
+                <TableRow style="@style/tableRowStyle" >
+
+                    <TextView
+                        style="@style/tabletextStyle"
+                        android:gravity="center"
+                        android:text="样品资料" />
+
+                    <TextView
+                        android:id="@+id/sampleDocuments"
+                        style="@style/tabletextStyle"
+                        android:layout_column="1"
+                        android:layout_span="2"
+                        android:gravity="center"
+                        android:text="样品资料" />
+                </TableRow>
+
+                <TableRow style="@style/tableRowStyle" >
+
+                    <TextView
+                        style="@style/tabletextStyle"
+                        android:gravity="center"
+                        android:text="客户要求" />
+
+                    <TextView
+                        android:id="@+id/clientRequirement"
+                        style="@style/tabletextStyle"
+                        android:layout_column="1"
+                        android:layout_span="2"
+                        android:gravity="center"
+                        android:text="客户要求" />
+                </TableRow>
+
+                <TableRow style="@style/tableRowStyle" >
+
+                    <TextView
+                        style="@style/tabletextStyle"
+                        android:gravity="center"
+                        android:text="备注" />
+
+                    <TextView
+                        android:id="@+id/flowmeterRemarks"
+                        style="@style/tabletextStyle"
+                        android:layout_column="1"
+                        android:layout_span="2"
+                        android:gravity="center"
+                        android:text="备注" />
+                </TableRow>
+
+                <TableRow style="@style/tableRowStyle" >
+
+                    <TextView
+                        style="@style/tabletextStyle"
+                        android:gravity="center"
+                        android:text="样品委托" />
+
+                    <TableLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="4"
+                        android:stretchColumns="*" >
+
+                        <TableRow style="@style/tableRowStyle" >
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:gravity="center"
+                                android:text="接收人" />
+
+                            <TextView
+                                android:id="@+id/entrustedPerson"
+                                style="@style/tabletextStyle"
+                                android:gravity="center"
+                                android:text="接收人" />
+
+                            <TextView
+                                style="@style/tabletextStyle"
+                                android:gravity="center"
+                                android:text="委托日期" />
+
+                            <TextView
+                                android:id="@+id/entrustedDate"
+                                style="@style/tabletextStyle"
+                                android:gravity="center"
+                                android:text="委托日期" />
+                        </TableRow>
+                    </TableLayout>
+                </TableRow>
+            </TableLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="horizontal" >
+                
+                <Button
+                    android:id="@+id/btn_SendFlowmeter"
+                    style="@style/buttonStyle"
+                    android:layout_column="2"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
+                    android:text="确认发放样品" />
+                
+                <Button
+                    android:id="@+id/btn_return"
+                    style="@style/buttonStyle"
+                    android:layout_column="1"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
+                    android:text="返回" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

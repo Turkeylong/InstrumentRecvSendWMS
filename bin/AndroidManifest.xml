@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.rfid.instrument"
-    android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionCode="2"
+    android:versionName="2.0" >
 
     <uses-sdk
         android:minSdkVersion="11" 
-        android:maxSdkVersion="21"
-        android:targetSdkVersion="16" />
+        android:maxSdkVersion="23"
+        android:targetSdkVersion="22" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -15,15 +15,37 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    
+    <uses-permission android:name="android.permission.DEVICE_POWER"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/> 
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <application
+        android:name="com.rfid.instrument.MyApplication"
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
-        <activity
-            android:name="com.rfid.instrument.activity.MainActivity"
-            android:label="@string/app_name" >
+        android:icon="@drawable/init_bg"
+        android:label="@string/app_name" >
+        <!-- 注册系统广播接收器 --> 
+		<receiver android:name="com.rfid.instrument.BootBroadcastReceiver" > 
+			<intent-filter> 
+				<action android:name="android.intent.action.BOOT_COMPLETED"/> 
+				<action android:name="android.intent.action.SCREEN_ON" />
+				<action android:name="android.intent.action.SCREEN_OFF" />
+				<action android:name="com.rfid.sdk.protocol.ACTION"/> 
+			</intent-filter> 
+		</receiver> 
+        <activity 
+			android:name="com.rfid.instrument.activity.AutoUpdateActivty"
+            android:label="@string/app_name" 
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" 
+            android:configChanges="orientation|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -32,7 +54,52 @@
         </activity>
         <activity
             android:name="com.rfid.instrument.activity.LoginActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" 
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" 
+            android:configChanges="orientation|keyboardHidden">
+        </activity>
+        <activity
+            android:name="com.rfid.instrument.activity.MainActivity"
+            android:label="@string/app_name" 
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" 
+            android:configChanges="orientation|keyboardHidden">
+        </activity>
+        <activity
+            android:name="com.rfid.instrument.activity.DeviceActivity"
+            android:label="@string/app_name"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden" 
+            android:configChanges="orientation|keyboardHidden"
+            android:launchMode="singleTask">
+            <intent-filter>
+            <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.rfid.instrument.activity.MipcaActivityCapture"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden" >
+        </activity>
+        <activity
+            android:name="com.rfid.instrument.activity.CommitActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden" >
+            
+        </activity>
+        <activity
+            android:name="com.rfid.instrument.activity.CommitEditActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden" >
+            
+        </activity>
+        <activity
+            android:name="com.rfid.instrument.activity.HistoryActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden" >
+            
         </activity>
     </application>
 

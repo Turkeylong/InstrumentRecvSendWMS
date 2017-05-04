@@ -1,0 +1,404 @@
+package com.rfid.instrument.activity;
+
+import java.text.SimpleDateFormat;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.SystemClock;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
+
+import com.rfid.instrument.R;
+import com.rfid.instrument.util.Commission;
+import com.rfid.instrument.util.Contract;
+import com.rfid.instrument.util.GetDataTask;
+import com.rfid.instrument.util.PublicUtil;
+import com.rfid.instrument.util.RfidUtil;
+import com.rfid.sdk.public_utils.DebugLog;
+
+public class CommitEditActivity extends Activity implements OnClickListener {
+	protected static final String TAG = "CommitEditActivity";
+	private Context context = CommitEditActivity.this;
+	private EditText entrustedInspectionNumber;//送检样品编号',
+	private EditText clientsContacts;//联系人',
+	private EditText clientsEmployer;//单位',
+	private EditText clientsEmployerAddress;//单位地址',
+	private EditText clientsPhone;//电话',
+	private EditText clientsPostcode;//邮政编码'
+	private EditText certificateClientsEmployer;//证书客户单位,
+	private EditText certificateClientsEmployerAddress;//证书客户单位地址,
+	
+	private EditText flowmeterName;//流量计名称',
+	private EditText flowmeterCaliber;//流量计口径',
+	private EditText flowmeterInside;//内径',
+	private EditText flowmeterLength;//长度',
+	private EditText flowmeterModel;//流量计型号',
+	private EditText flowmeterFactoryNumber;//流量计出厂编号'
+	private EditText flowmeterManufactor;//流量计生产厂家',
+	private EditText flowmeterUseState;//流量计使用状态',
+	private EditText flowmeterNominalFlow;//标称流量',
+	private EditText flowmeterKcoefficient;//K系数',
+	private EditText flowmeterPressureLevel;//流量计耐压等级',
+	
+	//private TextView flowmeterAccessories;//其他附件',
+	//private TextView flowmeterAppearance;//外观',
+	//private TextView sampleDocuments;//样品资料',
+	private EditText flowmeterWorkTypes;//工作类型', 
+	private EditText flowmeterAccuracyLevel;//流量计准确度等级',
+	private EditText flowmeterCommonFlow;//流量计常用流量',
+	private EditText clientRequirement;//客户要求,
+	private EditText flowmeterRemarks;//备注',
+
+	private EditText entrustedPerson;//委托人',
+	
+	private EditText entrustedDate;//委托日期',
+	
+	private Spinner spinner1,spinner2,spinner3,spinner4,spinner5,spinner6,spinner7;
+	private ArrayAdapter<String> arr_adapter;
+	
+	private Button btnWriteFlowEPC,btnWriteCommEPC,btnCreateCommit,btnReturn;
+	public static RfidUtil rfid = null;
+	private Commission order = null;
+	
+	private Handler handler = new Handler()
+	{
+		public void handleMessage(Message msg) 
+		{
+			switch (msg.what) 
+			{
+				case PublicUtil.RESP_CONTRACT_INFO:
+				{
+					String res=msg.obj+"";
+					ParseJson(res);
+					break;
+				}
+				case PublicUtil.RESP_COMMITE_INFO:
+				{
+					String res=msg.obj+"";
+					try
+					{
+						JSONObject jsonObject = new JSONObject(res).getJSONObject("result");
+						int state=jsonObject.getInt("state");	
+						if(state == 1)
+						{
+							PublicUtil.toastShow("接收成功", context);
+						}
+					}
+					catch(Exception e)
+					{
+						e.printStackTrace();
+					}
+					break;
+				}
+			}
+		}
+	};
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		// TODO 自动生成的方法存根
+		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		setContentView(R.layout.activity_commition);
+		
+		initView();
+	}
+
+	private void initView() {
+		// TODO 自动生成的方法存根
+		// 建立数据源
+		String[] mItems = getResources().getStringArray(R.array.num);
+		//适配器
+        arr_adapter= new ArrayAdapter<String>(this,R.layout.spinner_item, mItems);
+        		//new ArrayAdapter<String>(this, R.layout.spinner_item, mItems);
+        //设置样式
+        arr_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        
+		spinner1=(Spinner) findViewById(R.id.spinner1);
+		spinner2=(Spinner) findViewById(R.id.spinner2);
+		spinner3=(Spinner) findViewById(R.id.spinner3);
+		spinner4=(Spinner) findViewById(R.id.spinner4);
+		spinner5=(Spinner) findViewById(R.id.spinner5);
+		spinner6=(Spinner) findViewById(R.id.spinner6);
+		spinner7=(Spinner) findViewById(R.id.spinner7);
+		
+		spinner1.setAdapter(arr_adapter);
+		spinner2.setAdapter(arr_adapter);
+		spinner3.setAdapter(arr_adapter);
+		spinner4.setAdapter(arr_adapter);
+		spinner5.setAdapter(arr_adapter);
+		spinner6.setAdapter(arr_adapter);
+		spinner7.setAdapter(arr_adapter);
+		
+		entrustedInspectionNumber = (EditText) findViewById(R.id.edit_entrustedInspectionNumber);
+		clientsContacts = (EditText) findViewById(R.id.edit_clientsContacts);
+		clientsEmployer = (EditText) findViewById(R.id.edit_clientsEmployer);
+		clientsEmployerAddress = (EditText) findViewById(R.id.edit_clientsEmployerAddress);
+		clientsPhone = (EditText) findViewById(R.id.edit_clientsPhone);
+		clientsPostcode = (EditText) findViewById(R.id.edit_clientsPostcode);
+		certificateClientsEmployer = (EditText) findViewById(R.id.edit_certificateClientsEmployer);
+		certificateClientsEmployerAddress = (EditText) findViewById(R.id.edit_certificateClientsEmployerAddress);
+		
+		flowmeterName = (EditText) findViewById(R.id.edit_flowmeterName);
+		flowmeterCaliber = (EditText) findViewById(R.id.edit_flowmeterCaliber);
+		flowmeterInside = (EditText) findViewById(R.id.edit_flowmeterInside);
+		flowmeterLength = (EditText) findViewById(R.id.edit_flowmeterLength);
+		flowmeterModel = (EditText) findViewById(R.id.edit_flowmeterModel);
+		flowmeterFactoryNumber = (EditText) findViewById(R.id.edit_flowmeterFactoryNumber);
+		flowmeterManufactor = (EditText) findViewById(R.id.edit_flowmeterManufactor);
+		flowmeterUseState = (EditText) findViewById(R.id.edit_flowmeterUseState);
+		flowmeterNominalFlow = (EditText) findViewById(R.id.edit_flowmeterNominalFlow);
+		flowmeterKcoefficient = (EditText) findViewById(R.id.edit_flowmeterKcoefficient);
+		flowmeterPressureLevel = (EditText) findViewById(R.id.edit_flowmeterPressureLevel);
+		
+		flowmeterWorkTypes = (EditText) findViewById(R.id.edit_flowmeterWorkTypes);
+		flowmeterAccuracyLevel = (EditText) findViewById(R.id.edit_flowmeterAccuracyLevel);
+		flowmeterCommonFlow = (EditText) findViewById(R.id.edit_flowmeterCommonFlow);
+		clientRequirement = (EditText) findViewById(R.id.edit_clientRequirement);
+		flowmeterRemarks = (EditText) findViewById(R.id.edit_flowmeterRemarks);
+		
+		btnWriteFlowEPC = (Button) findViewById(R.id.btnWriteFlowEPC);
+		btnWriteCommEPC = (Button) findViewById(R.id.btnWriteCommEPC);
+		btnCreateCommit = (Button) findViewById(R.id.btnCreateCommit);
+		btnReturn = (Button) findViewById(R.id.btnReturn);
+		
+		btnWriteFlowEPC.setOnClickListener(this);
+		btnWriteCommEPC.setOnClickListener(this);
+		btnCreateCommit.setOnClickListener(this);
+		btnReturn.setOnClickListener(this);
+		
+		rfid = RfidUtil.getInstance(context);
+		rfid.reset();
+		rfid.setPower(false);
+	}
+	
+	@Override
+	protected void onStart() {
+		// TODO 自动生成的方法存根
+		super.onStart();
+		Intent intent = getIntent();
+		order = (Commission) intent.getSerializableExtra("Commission");
+		if(order != null)
+		{
+			entrustedInspectionNumber.setText(order.getEntrustedInspectionNumber());
+			clientsContacts.setText(order.getClientsContacts());
+			clientsEmployer.setText(order.getClientsEmployer());
+			clientsEmployerAddress.setText(order.getClientsEmployerAddress());
+			clientsPhone.setText(order.getClientsPhone());
+			clientsPostcode.setText(order.getClientsPostcode());
+			
+			certificateClientsEmployer.setText(order.getCertificateClientsEmployer());
+			certificateClientsEmployerAddress.setText(order.getCertificateClientsEmployerAddress());
+			flowmeterName.setText(order.getFlowmeterName());
+			flowmeterCaliber.setText(order.getFlowmeterCaliber());
+			flowmeterInside.setText(order.getFlowmeterInside());
+			flowmeterLength.setText(order.getFlowmeterLength());
+			flowmeterModel.setText(order.getFlowmeterModel());
+			flowmeterFactoryNumber.setText(order.getFlowmeterFactoryNumber());
+			flowmeterManufactor.setText(order.getFlowmeterManufactor());
+			flowmeterUseState.setText(order.getFlowmeterUseState());
+			flowmeterNominalFlow.setText(order.getFlowmeterNominalFlow());
+			flowmeterKcoefficient.setText(order.getFlowmeterKcoefficient());
+			flowmeterPressureLevel.setText(order.getFlowmeterPosition());
+			
+			//flowmeterAccessories.setText(order.getFlowmeterAccessories());
+			//flowmeterAppearance.setText(order.getFlowmeterAppearance());
+			//sampleDocuments.setText(order.getSampleDocuments());
+			flowmeterWorkTypes.setText(order.getFlowmeterWorkTypes());
+			flowmeterAccuracyLevel.setText(order.getFlowmeterAccuracyLevel());
+			flowmeterCommonFlow.setText(order.getFlowmeterCommonFlow());
+			clientRequirement.setText(order.getClientsRequirement());
+			flowmeterRemarks.setText(order.getRemarks());
+
+//			entrustedPerson.setText(order.getEntrustedPerson());
+//			entrustedDate.setText(order.getEntrustedDate());
+		}
+	}
+	
+	private void ParseJson(String result) {
+		// TODO 自动生成的方法存根
+		try
+		{
+			JSONObject jsonObject = new JSONObject(result).getJSONObject("result");
+			JSONArray jsonArr = jsonObject.getJSONArray("ContractList");
+			
+			int totalCount=jsonObject.getInt("totalCount");	
+			DebugLog.i(TAG,"totalCount："+totalCount+",size="+jsonArr.length());
+			
+			if(totalCount == 1)
+			{
+				JSONObject jsonObj=(JSONObject)jsonArr.get(0);
+				Contract obj = new Contract();
+				
+				obj.setContractId(jsonObj.getInt("contractId"));
+				obj.setContractNumber(jsonObj.getString("contractNumber"));
+				obj.setContractUintName(jsonObj.getString("contractUintName"));
+				obj.setContractCreationUserName(jsonObj.getString("contractCreationUserName"));
+				obj.setContractCreationDate(jsonObj.getString("contractCreationDate"));
+				obj.setContractSigningUserName(jsonObj.getString("contractSigningUserName"));
+				obj.setContractSigningDate(jsonObj.getString("contractSigningDate"));
+				obj.setContractType(jsonObj.getInt("contractType"));
+				obj.setContractState(jsonObj.getInt("contractState"));
+				obj.setContractPrice(jsonObj.getInt("contractPrice"));
+				
+				int contract_state = obj.getContractState();
+				DebugLog.i(TAG,"contract_state："+contract_state);
+				if(contract_state > 0)
+				{
+					if(obj.getContractId() > 0)
+					{
+						submitRecevice(order);
+					}
+					else
+					{
+						PublicUtil.toastShow("合同尚未签订，不能接收。", context);
+					}
+				}
+				else
+				{
+					PublicUtil.toastShow("合同尚未签订，不能接收。", context);
+				}
+			}
+			
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	private void submitRecevice(Commission order)
+	{
+		GetDataTask mrequstTask=new GetDataTask(context, handler);
+		StringBuffer sb=new StringBuffer();
+		sb.append("t="+PublicUtil.REQ_COMMITE_INFO);
+		sb.append("&flowmeterId="+order.getFlowmeterId());
+		
+		sb.append("&entrustedInspectionId="+order.getId());
+		
+		sb.append("&checkingProcessState=3");
+		sb.append("&clientsContacts="+order.getClientsContacts());
+		sb.append("&clientsEmployer="+order.getClientsEmployer());
+		sb.append("&clientsEmployerAddress="+order.getClientsEmployerAddress());
+		sb.append("&certificateClientsEmployer="+order.getCertificateClientsEmployer());
+		sb.append("&certificateClientsEmployerAddress="+order.getCertificateClientsEmployerAddress());
+		sb.append("&clientsPhone="+order.getClientsPhone());
+		sb.append("&clientsPostcode="+order.getClientsPostcode());
+		sb.append("&clientsEmail="+order.getClientsEmail());
+		sb.append("&clientsRequirement="+order.getClientsRequirement());
+		
+		sb.append("&flowmeterName="+order.getFlowmeterName());
+		sb.append("&flowmeterCaliber="+order.getFlowmeterCaliber());
+		sb.append("&flowmeterInside="+order.getFlowmeterInside());
+		sb.append("&flowmeterLength="+order.getFlowmeterLength());
+		sb.append("&flowmeterModel="+order.getFlowmeterModel());
+		sb.append("&flowmeterAccessories="+order.getFlowmeterAccessories());
+		sb.append("&flowmeterAppearance="+order.getFlowmeterAppearance());
+		sb.append("&sampleDocuments="+order.getSampleDocuments());
+		sb.append("&flowmeterWorkTypes="+order.getFlowmeterWorkTypes());
+		sb.append("&flowmeterAccuracyLevel="+order.getFlowmeterAccuracyLevel());
+		sb.append("&flowmeterCommonFlow="+order.getFlowmeterCommonFlow());
+		sb.append("&flowmeterManufactor="+order.getFlowmeterManufactor());
+		sb.append("&flowmeterFactoryNumber="+order.getFlowmeterFactoryNumber());
+		sb.append("&flowmeterUseState="+order.getFlowmeterUseState());
+		
+		//accessoriesFrontStraightPipe=0, accessoriesRearStraightPipe=0, accessoriesRectifier=0, accessoriesJoint=0, accessoriesShim=0, accessoriesWasher=0, accessoriesBoltNut=0
+		sb.append("&accessoriesFrontStraightPipe="+order.getAccessoriesFrontStraightPipe());
+		sb.append("&accessoriesRearStraightPipe="+order.getAccessoriesRearStraightPipe());
+		sb.append("&accessoriesRectifier="+order.getAccessoriesRectifier());
+		sb.append("&accessoriesJoint="+order.getAccessoriesJoint());
+		sb.append("&accessoriesShim="+order.getAccessoriesShim());
+		sb.append("&accessoriesWasher="+order.getAccessoriesWasher());
+		sb.append("&accessoriesBoltNut="+order.getAccessoriesBoltNut());
+		
+		sb.append("&Remarks="+order.getRemarks());
+		sb.append("&sampleRecipient="+PublicUtil.USER_NAME);
+		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");    
+		String date=sdf.format(new java.util.Date());
+		sb.append("&entrustedDate="+date);
+		
+		mrequstTask.setHandlerCode(PublicUtil.RESP_COMMITE_INFO);
+		mrequstTask.setParams(sb.toString());
+		mrequstTask.execute("");
+	}
+
+	@Override
+	public void onClick(View v) {
+		// TODO 自动生成的方法存根
+		switch (v.getId())
+		{
+			case R.id.btnWriteFlowEPC:
+			{
+				String flowmeterId = order.getFlowmeterId();
+				if(flowmeterId.isEmpty())
+				{
+					
+				}
+				else
+				{
+					String hexflowmeterId = String.format("%032X", Integer.valueOf(flowmeterId));//Integer.toHexString(Integer.valueOf(flowmeterId));
+					//PublicUtil.toastShow("设备编号："+hexflowmeterId, context);
+					rfid.setPower(true);
+					SystemClock.sleep(500);
+					rfid.writeEPC(hexflowmeterId);
+				}
+				break;
+			}
+			case R.id.btnWriteCommEPC:
+			{
+				String CommNum = order.getEntrustedInspectionNumber();
+				if(CommNum.isEmpty())
+				{
+					PublicUtil.toastShow("尚未生成委托单号，请先办理检定委托。", context);
+				}
+				break;
+			}
+			case R.id.btnCreateCommit:
+			{
+				int state = order.getCheckingProcessState();
+				if(state == 2)
+				{
+					GetDataTask mrequstTask=new GetDataTask(context, handler);
+					StringBuffer sb=new StringBuffer();
+					sb.append("t="+PublicUtil.REQ_CONTRACT_STATE);
+					sb.append("&flowmeterId="+order.getFlowmeterId());
+					sb.append("&entrustedInspectionId="+order.getId());
+					
+					mrequstTask.setHandlerCode(PublicUtil.RESP_CONTRACT_INFO);
+					mrequstTask.setParams(sb.toString());
+					mrequstTask.execute("");
+				}
+				else
+				{
+					if(order.getClientsEmployer().contains(context.getString(R.string.contract_uint)))
+					{
+						PublicUtil.toastShow("内部流量计，未在计划内。", context);
+					}
+					else
+					{
+						PublicUtil.toastShow("合同尚未办理，请先办理完合同。", context);
+					}
+					
+				}
+				break;
+			}
+			case R.id.btnReturn:
+			{
+				finish();
+				break;
+			}
+		}
+	}
+}

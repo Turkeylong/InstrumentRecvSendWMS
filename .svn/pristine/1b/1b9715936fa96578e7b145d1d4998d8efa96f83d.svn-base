@@ -1,0 +1,545 @@
+package com.rfid.instrument.activity;
+
+import java.io.Serializable;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.transition.Visibility;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.rfid.instrument.R;
+import com.rfid.instrument.util.Commission;
+import com.rfid.instrument.util.GetDataTask;
+import com.rfid.instrument.util.MD5Util;
+import com.rfid.instrument.util.PublicUtil;
+import com.rfid.sdk.public_utils.DebugLog;
+
+public class LoginActivity extends Activity {
+	private static final String TAG = "LoginActivity";
+	private static final String EXTRA_EMAIL = "";
+
+	private SharedPreferences sp;//获得实例对象  
+	
+	private String mEmail;
+	private EditText mEmailView;
+	private EditText mPasswordView;
+	private ScrollView mLoginFormView;
+	private LinearLayout mLoginStatusView;
+	private TextView mLoginStatusMessageView;
+	private GetDataTask mloginTask;
+	private String mPassword;
+	private Button scanloginButton;
+	private CheckBox remindPass,forgetPass;
+	
+	private Activity activity=LoginActivity.this;
+	
+	private Handler handler=new Handler()
+	{
+		public void handleMessage(Message msg) 
+		{
+			switch (msg.what) 
+			{
+				case PublicUtil.RESP_LOGIN_RES:
+				{
+					String res=msg.obj+"";
+					Log.i(TAG,res);
+					CheckLogin(res);
+					break;
+				}
+				case PublicUtil.RESP_COMMITE_INFO:
+				{
+					String res=msg.obj+"";
+					Log.i(TAG,res);
+					CheckCommit(res);
+					break;
+				}
+			}
+		}
+
+
+	};
+	
+	private void CheckLogin(String result) {
+		// TODO 自动生成的方法存根
+		if(result.isEmpty())
+		{
+			mloginTask.onCancelled("服务器异常");
+			showProgress(false);
+			return;
+		}
+		try
+		{
+			JSONObject jsonObject = new JSONObject(result).getJSONObject("result");
+			int state = jsonObject.getInt("state");
+			JSONArray jsonArr = jsonObject.getJSONArray("msg");
+			JSONObject obj = (JSONObject)jsonArr.get(0);
+			if(state == 1)
+			{
+				//修改成功
+				//createDialog(1,msg);
+				DebugLog.d("test", obj.toString());
+				
+				PublicUtil.USER_SESSION = obj.getString("session");
+				PublicUtil.USER_ID = obj.getString("userName");
+				PublicUtil.USER_NAME = obj.getString("userCompellation");
+				PublicUtil.USER_UNIT = obj.getString("userEmployer");
+				PublicUtil.USER_POWER = obj.getString("userPower");
+				PublicUtil.USER_ADDR = obj.getString("userEmployeraddress");//userEmployer    
+				PublicUtil.USER_POSTCODE = obj.getString("userPostcode");
+				PublicUtil.USER_EMAIL = obj.getString("userEmail");
+				PublicUtil.USER_REG_TIME = obj.getString("userRegtime");
+				PublicUtil.USER_ROLE = obj.getString("userRoles");
+				
+				if(remindPass.isChecked())  
+                {  
+                 //记住用户名、密码、  
+                  Editor editor = sp.edit();  
+                  editor.putString("USER_NAME", mEmailView.getText().toString());  
+                  editor.putString("PASSWORD",mPasswordView.getText().toString());  
+                  editor.commit();  
+                } 
+				
+				finish();
+				Intent intent=new Intent(LoginActivity.this,MainActivity.class);
+				startActivity(intent);
+			}
+			else
+			{
+				//失败
+				//createDialog(0,msg);
+				showProgress(false);
+				mloginTask.onCancelled(obj.getString("msg"));
+			}						
+		}
+		catch(Exception e)
+		{	
+			//createDialog(0,"发生异常");
+			showProgress(false);
+			mloginTask.onCancelled("发生异常");
+//			finish();
+//			Intent intent=new Intent(LoginActivity.this,MainActivity.class);
+//			startActivity(intent);
+		}
+	}
+	
+	private void CheckCommit(String result) {
+		// TODO 自动生成的方法存根
+		int totalCount = 0;
+		Commission order = new Commission();
+		try
+		{
+			JSONObject jsonObject = new JSONObject(result).getJSONObject("result");
+			JSONArray jsonArr = jsonObject.getJSONArray("DataList");
+			
+			totalCount = jsonObject.getInt("totalCount");	
+			
+			DebugLog.i(TAG,"totalCount："+totalCount+",size="+jsonArr.length());
+			
+			if(totalCount == jsonArr.length())
+			{
+				DebugLog.i(TAG,"获取设备："+totalCount);
+				
+				 for(int i=0;i<jsonArr.length();i++)
+				 {
+					 JSONObject jsonObj=(JSONObject)jsonArr.get(i);
+					 
+					 order.setId(jsonObj.getInt("entrustedInspectionId"));
+					 order.setFlowmeterId(jsonObj.getString("flowmeterId"));
+					 
+					 order.setClientsContacts(jsonObj.getString("clientsContacts"));
+					 order.setClientsEmployer(jsonObj.getString("clientsEmployer"));
+					 order.setClientsEmployerAddress(jsonObj.getString("clientsEmployerAddress"));
+					 order.setClientsPhone(jsonObj.getString("clientsPhone"));
+					 order.setClientsEmail(jsonObj.getString("clientsEmail"));
+					 order.setClientsPostcode(jsonObj.getString("clientsPostcode"));
+					 
+					 order.setFlowmeterName(jsonObj.getString("flowmeterName"));
+					 order.setFlowmeterCaliber(jsonObj.getString("flowmeterCaliber"));
+					 order.setFlowmeterInside(jsonObj.getString("flowmeterInside"));
+					 order.setFlowmeterLength(jsonObj.getString("flowmeterLength"));
+					 order.setFlowmeterModel(jsonObj.getString("flowmeterModel"));
+					 order.setFlowmeterFactoryNumber(jsonObj.getString("flowmeterFactoryNumber"));
+					 order.setFlowmeterManufactor(jsonObj.getString("flowmeterManufactor"));
+					 order.setFlowmeterUseState(jsonObj.getString("flowmeterUseState"));
+					 order.setFlowmeterNominalFlow(jsonObj.getString("flowmeterNominalFlow"));
+					 
+					 order.setFlowmeterPosition(jsonObj.getString("flowmeterPosition"));
+					 order.setFlowmeterResult(jsonObj.getString("checkingQualified"));
+					 
+					 order.setFlowmeterKcoefficient(jsonObj.getString("flowmeterKcoefficient"));
+					 order.setFlowmeterPressureLevel(jsonObj.getString("flowmeterPressureLevel"));
+					 order.setFlowmeterAccessories(jsonObj.getString("flowmeterAccessories"));
+					 order.setFlowmeterAppearance(jsonObj.getString("flowmeterAppearance"));
+					 order.setSampleDocuments(jsonObj.getString("sampleDocuments"));
+					 order.setFlowmeterWorkTypes(jsonObj.getString("flowmeterWorkTypes"));
+					 order.setFlowmeterAccuracyLevel(jsonObj.getString("flowmeterAccuracyLevel"));
+					 order.setFlowmeterCommonFlow(jsonObj.getString("flowmeterCommonFlow"));
+					 order.setRemarks(jsonObj.getString("Remarks"));
+					 order.setEntrustedPerson(jsonObj.getString("entrustedPerson"));
+					 order.setEntrustedDate(jsonObj.getString("entrustedDate"));
+					 order.setSampleRecipient(jsonObj.getString("sampleRecipient"));
+					 order.setSampleTakePerson(jsonObj.getString("sampleTakePerson"));
+					 order.setSampleTakeDate(jsonObj.getString("sampleTakeDate"));
+					 order.setSampleSentPerson(jsonObj.getString("sampleSentPerson"));
+						
+					 order.setAccessoriesFrontStraightPipe(PublicUtil.getIntValue(jsonObj.getString("accessoriesFrontStraightPipe")));
+					 order.setAccessoriesRearStraightPipe(PublicUtil.getIntValue(jsonObj.getString("accessoriesRearStraightPipe")));
+					 order.setAccessoriesRectifier(PublicUtil.getIntValue(jsonObj.getString("accessoriesRectifier")));
+					 order.setAccessoriesJoint(PublicUtil.getIntValue(jsonObj.getString("accessoriesJoint")));
+					 order.setAccessoriesShim(PublicUtil.getIntValue(jsonObj.getString("accessoriesShim")));
+					 order.setAccessoriesWasher(PublicUtil.getIntValue(jsonObj.getString("accessoriesWasher")));
+					 order.setAccessoriesBoltNut(PublicUtil.getIntValue(jsonObj.getString("accessoriesBoltNut")));
+
+					 order.setCheckingProject(jsonObj.getString("checkingProject"));
+					 order.setCheckingProcessState(PublicUtil.getIntValue(jsonObj.getString("checkingProcessState")));
+					 order.setCheckingPrice(jsonObj.getString("checkingPrice"));
+					 order.setCheckingDate(jsonObj.getString("checkingDate"));
+					 order.setContractId(jsonObj.getInt("contractId"));
+				 }
+			}
+		}
+		catch(Exception e)
+		{	
+			e.printStackTrace();
+		}
+		
+		if(totalCount > 0)
+		{
+			finish();
+			Intent intent=new Intent(LoginActivity.this,MainActivity.class);
+			intent.putExtra("CommitInfo", (Serializable)order);
+			startActivity(intent);
+		}
+	}
+	
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		Window window = getWindow();  
+        WindowManager.LayoutParams params = window.getAttributes();  
+        params.systemUiVisibility = View.SYSTEM_UI_FLAG_LOW_PROFILE;
+        window.setAttributes(params);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		
+		DisplayMetrics displaysMetrics = new DisplayMetrics();
+		getWindowManager().getDefaultDisplay().getMetrics(displaysMetrics);
+		PublicUtil.width = displaysMetrics.widthPixels;
+		PublicUtil.height = displaysMetrics.heightPixels;
+		PublicUtil.dpi = displaysMetrics.densityDpi;
+		String showSize = "手机屏幕分辨率： " +  displaysMetrics.widthPixels+"*"+displaysMetrics.heightPixels+":"+displaysMetrics.densityDpi+"dpi";
+		System.out.println(showSize);
+		//Toast.makeText(activity, showSize, Toast.LENGTH_LONG).show();
+		
+		setContentView(R.layout.activity_login);
+		sp = this.getSharedPreferences("userInfo", Context.MODE_WORLD_READABLE);
+		
+		mEmailView = (EditText) findViewById(R.id.username_edit);
+		mPasswordView = (EditText) findViewById(R.id.password_edit);
+		
+		remindPass = (CheckBox) findViewById(R.id.remindPass);
+		forgetPass = (CheckBox) findViewById(R.id.forgetPass);
+		
+		//判断记住密码多选框的状态  
+	    if(sp.getBoolean("ISCHECK", false)) 
+	    {
+	    	//设置默认是记录密码状态  
+	    	remindPass.setChecked(true);  
+	    	mEmailView.setText(sp.getString("USER_NAME", ""));  
+	    	mPasswordView.setText(sp.getString("PASSWORD", ""));  
+	          //判断自动登陆多选框状态  
+	          if(sp.getBoolean("AUTO_ISCHECK", false))  
+	          {  
+	                 //设置默认是自动登录状态  
+	        	  	forgetPass.setChecked(true);  
+	                //跳转界面  
+	                Intent intent = new Intent(LoginActivity.this,MainActivity.class);  
+	                LoginActivity.this.startActivity(intent);  
+	                  
+	          }
+	    }
+	    
+	  //监听记住密码多选框按钮事件  
+	    remindPass.setOnCheckedChangeListener(new OnCheckedChangeListener() {  
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {  
+                if (remindPass.isChecked()) {  
+                      
+                    System.out.println("记住密码已选中");  
+                    sp.edit().putBoolean("ISCHECK", true).commit();  
+                      
+                }else {  
+                      
+                    System.out.println("记住密码没有选中");  
+                    sp.edit().putBoolean("ISCHECK", false).commit();  
+                      
+                }  
+  
+            }  
+        });  
+          
+        //监听自动登录多选框事件  
+	    forgetPass.setOnCheckedChangeListener(new OnCheckedChangeListener() {  
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {  
+                if (forgetPass.isChecked()) {  
+                    System.out.println("自动登录已选中");  
+                    sp.edit().putBoolean("AUTO_ISCHECK", true).commit();  
+  
+                } else {  
+                    System.out.println("自动登录没有选中");  
+                    sp.edit().putBoolean("AUTO_ISCHECK", false).commit();  
+                }  
+            }  
+        });
+		
+		if(PublicUtil.height > PublicUtil.width)
+		{
+			scanloginButton = (Button) findViewById(R.id.scanloginButton);
+			scanloginButton.setVisibility(View.VISIBLE);
+			scanloginButton.setOnClickListener(
+					new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							// TODO 自动生成的方法存根
+							Intent intent = new Intent();
+							intent.setClass(activity, MipcaActivityCapture.class);
+							intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+							startActivityForResult(intent, 1);
+						}
+					});
+		}
+		// Set up the login form.
+		// 获取引入的邮箱并显示
+		mEmail = getIntent().getStringExtra(EXTRA_EMAIL);
+
+		mPasswordView.setOnEditorActionListener(
+				new TextView.OnEditorActionListener() {
+					@Override
+					public boolean onEditorAction(TextView textView, int id,
+							KeyEvent keyEvent) {
+						if (id == R.id.loginButton || id == EditorInfo.IME_NULL) 
+						{// 判断软件盘选择的内容
+							attemptLogin();
+							return true;
+						}
+						return false;
+					}
+				});
+		mLoginFormView = (ScrollView) findViewById(R.id.login_form);
+		mLoginStatusView = (LinearLayout) findViewById(R.id.login_status);
+		mLoginStatusMessageView = (TextView) findViewById(R.id.login_status_message);
+		// 提交按键响应处理
+		findViewById(R.id.loginButton).setOnClickListener(
+				new View.OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						attemptLogin();
+					}
+				});
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO 自动生成的方法存根
+		super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+		case 1:
+			if(resultCode == android.app.Activity.RESULT_OK )
+			{
+				Bundle bundle = data.getExtras();
+				//显示扫描到的内容
+				try
+				{
+					String commitNo = bundle.getString("result");
+					int beginIndex = commitNo.indexOf("?");
+					if(commitNo.substring(beginIndex+1,beginIndex+3).endsWith("id"))
+					{//103接口被改为需要登录才能查询到数据了。
+						mloginTask=new GetDataTask(activity, handler);
+						StringBuffer sb=new StringBuffer();
+						sb.append("t="+PublicUtil.REQ_CERTIFICATE_STATE);
+						sb.append("&entrustedInspectionId="+commitNo.substring(beginIndex+4));
+						mloginTask.setHandlerCode(PublicUtil.RESP_COMMITE_INFO);
+						mloginTask.setParams(sb.toString());
+						mloginTask.execute("");
+					}
+				}
+				catch(Exception e)
+				{
+					e.printStackTrace();
+				}
+				
+				//显示
+				//fragContent.setImageBitmap((Bitmap) data.getParcelableExtra("bitmap"));
+			}
+			break;
+		}
+	}
+
+	public void attemptLogin() {
+
+		//设置输入框的错误提示为空
+		mEmailView.setError(null);
+		mPasswordView.setError(null);
+		//获取输入框的邮箱和密码
+		mEmail = mEmailView.getText().toString();
+		mPassword = mPasswordView.getText().toString();
+		boolean cancel = false;
+		View focusView = null;
+		// 设置密码输入框的格式（不能为空，不能小于4位）如果格式错误重新获得焦点，并提示错误内容
+//		if (TextUtils.isEmpty(mPassword)) 
+//		{
+//			mPasswordView.setError(getString(R.string.error_field_required));
+//			focusView = mPasswordView;
+//			cancel = true;
+//		} 
+//		else if (mPassword.length() < 4) 
+//		{
+//			mPasswordView.setError(getString(R.string.error_invalid_password));
+//			focusView = mPasswordView;
+//			cancel = true;
+//		}
+		// 设置邮箱格式
+//		if (TextUtils.isEmpty(mEmail)) 
+//		{
+//			mEmailView.setError(getString(R.string.error_field_required));
+//			focusView = mEmailView;
+//			cancel = true;
+//		} 
+//		else if (!mEmail.contains("@")) 
+//		{
+//			mEmailView.setError(getString(R.string.error_invalid_email));
+//			focusView = mEmailView;
+//			cancel = true;
+//		}
+		
+		if (cancel) {
+			//如果格式错误，输入框重新获得输入焦点
+			focusView.requestFocus();
+		} 
+		else 
+		{
+			//如果输入的格式正确，显示验证等待对话框，并启动验证线程
+			mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
+			showProgress(true);
+			//mAuthTask = new UserLoginTask();
+			//mAuthTask.execute((Void) null);
+			
+			String pwd=MD5Util.getMd5(mPassword);
+			
+			PublicUtil.USER_SESSION = "";
+			
+			mloginTask=new GetDataTask(activity, handler);
+			StringBuffer sb=new StringBuffer();
+			sb.append("t="+PublicUtil.REQ_SUBMIT_PWD);
+			sb.append("&userId="+mEmail);
+			sb.append("&userPassword="+pwd);
+			mloginTask.setHandlerCode(PublicUtil.RESP_LOGIN_RES);
+			mloginTask.setParams(sb.toString());
+			mloginTask.execute("");
+		}
+	}
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)//指出应用程序的API版本
+	private void showProgress(final boolean show) {
+		//获取运行平台的版本与应用的版本对比实现功能的兼容性
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) 
+		{
+			int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);//获取系统定义的时间
+
+			mLoginStatusView.setVisibility(View.VISIBLE);//设置验证对话框为可显
+			mLoginStatusView.animate().setDuration(shortAnimTime)//设置动画显示时间
+					.alpha(show ? 1 : 0)//设置动画渐变效果
+					.setListener(new AnimatorListenerAdapter() 
+			{
+						@Override
+						public void onAnimationEnd(Animator animation) {
+							mLoginStatusView.setVisibility(show ? View.VISIBLE
+									: View.GONE);//跟据参数控制该控件显示或隐藏
+						}
+			});
+			mLoginFormView.setVisibility(View.VISIBLE);//设置输入界面可显
+			mLoginFormView.animate().setDuration(shortAnimTime)
+					.alpha(show ? 0 : 1)
+					.setListener(new AnimatorListenerAdapter() {
+						@Override
+						public void onAnimationEnd(Animator animation) {
+							mLoginFormView.setVisibility(show ? View.GONE
+									: View.VISIBLE);
+						}
+					});
+		} else 
+		{
+			mLoginStatusView.setVisibility(show ? View.VISIBLE : View.GONE);//跟据参数控制该控件显示或隐藏
+			mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+		}
+	}
+/*	
+	public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+		@Override
+		protected Boolean doInBackground(Void... params) {//后台运行线程
+			try {
+				//模拟用户验证耗时
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				return false;
+			}
+
+			for (String credential : DUMMY_CREDENTIALS) {//遍历数组验证自定义用户及密码
+				String[] pieces = credential.split(":");//分割字符串，将密码个邮箱分离开
+				if (pieces[0].equals(mEmail)) {
+					return pieces[1].equals(mPassword);
+				}
+			}
+			return true;
+		}
+
+		@Override
+		protected void onPostExecute(final Boolean success) {//线程结束后的ui处理
+			mAuthTask = null;
+			showProgress(false);//隐藏验证延时对话框
+
+			if (success) {
+				finish();
+				Intent intent=new Intent(LoginActivity.this,MainActivity.class);
+				startActivity(intent);
+			} else {//密码错误，输入框获得焦点，并提示错误
+				mPasswordView.setError(getString(R.string.error_incorrect_password));
+				mPasswordView.requestFocus();
+			}
+		}
+		//取消验证
+		@Override
+		protected void onCancelled() {
+			mAuthTask = null;
+			showProgress(false);
+		}
+	}
+	*/
+}
